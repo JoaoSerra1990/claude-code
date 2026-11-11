@@ -2,7 +2,8 @@ import { FONT } from "../theme";
 import { Ator, type Visual } from "../serie/Ator";
 
 // Cenários de "O Menino que Vendia Minutos". Presente: rua antiga sob chuva, em
-// azuis e cinzas frios. Memória: cozinha banhada de dourado. Final: o quarto de Theo.
+// azuis e cinzas frios. Memória: cozinha banhada de dourado. Final: a relojoaria
+// se abre para um espaço de estrelas e relógios, cada um guardando uma memória.
 
 const Ponteiros = ({ cx, cy, r, tempo, cor = "#20242c" }: { cx: number; cy: number; r: number; tempo: number; cor?: string }) => {
   const min = (tempo / 60) * 6 - 90;
@@ -26,9 +27,7 @@ const Ponteiros = ({ cx, cy, r, tempo, cor = "#20242c" }: { cx: number; cy: numb
 
 export const RELOGIO_RUA: [number, number] = [250, 420];
 export const RELOGIO_COZINHA: [number, number] = [250, 420];
-export const FOTO: [number, number] = [300, 690];
-export const CALENDARIO: [number, number] = [780, 600];
-export const CAIXA: [number, number] = [300, 1215];
+export const PORTA_RELOJOARIA: [number, number] = [425, 1050];
 
 type RuaProps = {
   t: number;
@@ -41,9 +40,17 @@ type RuaProps = {
   ouroEm: [number, number];
   /** 1 quando a chuva está suspensa no ar. */
   suspensa: number;
+  /** Intensidade da chuva, de 0 (cessou) a 1. */
+  chuva: number;
+  /** Onde Theo está: a chuva não o molha. */
+  seco: [number, number];
+  /** Mostra na vitrine o reflexo de Arthur e da placa; Theo não tem reflexo. */
+  reflexo?: Visual;
+  /** Abertura da porta da relojoaria, de 0 a 1. */
+  porta: number;
 };
 
-export const Rua = ({ t, tChuva, tRelogio, ouro, ouroEm, suspensa }: RuaProps) => {
+export const Rua = ({ t, tChuva, tRelogio, ouro, ouroEm, suspensa, chuva, seco, reflexo, porta }: RuaProps) => {
   const gotas = Array.from({ length: 110 }, (_, i) => ({
     x: (i * 173) % 1120 - 20,
     y: ((i * 311 + tChuva * (620 + (i % 5) * 90)) % 2000) - 40,
@@ -95,14 +102,51 @@ export const Rua = ({ t, tChuva, tRelogio, ouro, ouroEm, suspensa }: RuaProps) =
       <Ponteiros cx={RELOGIO_RUA[0]} cy={RELOGIO_RUA[1]} r={110} tempo={tRelogio} />
       <rect x={50} y={640} width={400} height={76} rx={8} fill="#2a3140" />
       <text x={250} y={694} textAnchor="middle" fontFamily={FONT} fontSize={46} fill="#d9b25e" letterSpacing={4}>RELOJOARIA</text>
-      <rect x={50} y={760} width={400} height={470} fill="#1a2436" stroke="#2a3140" strokeWidth={14} />
-      {[[130, 880, 46], [250, 960, 60], [370, 870, 40], [160, 1090, 38], [350, 1100, 50]].map(([x, y, r], i) => (
+      {/* vitrine */}
+      <rect x={40} y={760} width={300} height={470} fill="#1a2436" stroke="#2a3140" strokeWidth={14} />
+      {[[100, 870, 40], [190, 960, 54], [282, 860, 36], [116, 1090, 34], [268, 1100, 44]].map(([x, y, r], i) => (
         <g key={i}>
           <circle cx={x} cy={y} r={r} fill="#d9d2bd" stroke="#8b6f33" strokeWidth={6} opacity={0.85} />
           <Ponteiros cx={x} cy={y} r={r * 0.9} tempo={tRelogio + i * 733} />
         </g>
       ))}
-      <path d="M70 780 L190 780 L110 1210 L60 1210Z" fill="#9fc0e8" opacity={0.12} />
+      <clipPath id="vitrine"><rect x={47} y={767} width={286} height={456} /></clipPath>
+      {reflexo && (
+        <g clipPath="url(#vitrine)" opacity={0.34}>
+          <g transform="translate(236 1300) scale(-0.6 0.6)"><Ator v={reflexo} t={t} expr="triste" fase={3} /></g>
+          {/* a placa aparece no vidro, mas ninguém a segura */}
+          <g transform="translate(118 1270) scale(0.42)">
+            <rect x={-9} y={-340} width={18} height={340} fill="#6b4a30" />
+            <rect x={-190} y={-560} width={380} height={230} rx={10} fill="#efe3c4" stroke="#3d2c1c" strokeWidth={9} />
+          </g>
+        </g>
+      )}
+      <path d="M60 780 L150 780 L90 1210 L52 1210Z" fill="#9fc0e8" opacity={0.12} />
+
+      {/* porta da relojoaria: por dentro, estrelas e relógios */}
+      <rect x={360} y={790} width={130} height={520} fill="#0b0d2e" stroke="#1c1610" strokeWidth={10} />
+      <clipPath id="vaoPorta"><rect x={365} y={795} width={120} height={510} /></clipPath>
+      {porta > 0 && (
+        <g clipPath="url(#vaoPorta)">
+          {Array.from({ length: 26 }, (_, i) => (
+            <circle key={i} cx={370 + ((i * 47) % 112)} cy={800 + ((i * 131) % 500)} r={1.5 + (i % 3)} fill="#fff" opacity={0.5 + 0.5 * Math.sin(t * 3 + i)} />
+          ))}
+          {[[400, 900, 20], [452, 1010, 26], [396, 1130, 16], [446, 1220, 22]].map(([x, y, r], i) => (
+            <g key={i}>
+              <circle cx={x} cy={y + Math.sin(t * 1.2 + i) * 8} r={r * 2.2} fill="url(#halo)" />
+              <circle cx={x} cy={y + Math.sin(t * 1.2 + i) * 8} r={r} fill="#fbe9b0" stroke="#e8c35a" strokeWidth={4} />
+            </g>
+          ))}
+        </g>
+      )}
+      <g transform={`translate(365 0) scale(${1 - porta * 0.86} 1) translate(-365 0)`}>
+        <rect x={365} y={795} width={120} height={510} fill="#4a3526" />
+        <rect x={382} y={830} width={86} height={190} fill="#1a2436" stroke="#2a2018" strokeWidth={6} />
+        <rect x={382} y={1060} width={86} height={200} fill="#3d2c1f" />
+        <circle cx={470} cy={1050} r={9} fill="#d9b25e" />
+      </g>
+      {porta > 0 && <polygon points="365,1305 485,1305 660,1720 250,1720" fill="url(#reflexo)" opacity={0.9 * porta} />}
+      {porta > 0 && <circle cx={425} cy={1050} r={200 + porta * 260} fill="url(#halo)" opacity={0.55 * porta} />}
 
       {/* loja pequena iluminada em dourado, à direita */}
       <rect x={590} y={420} width={490} height={890} fill="#5a4c40" />
@@ -154,14 +198,16 @@ export const Rua = ({ t, tChuva, tRelogio, ouro, ouroEm, suspensa }: RuaProps) =
       {/* luz dourada do relógio de bolso */}
       {ouro > 0 && <circle cx={ouroEm[0]} cy={ouroEm[1]} r={160 + ouro * 900} fill="url(#halo)" opacity={Math.min(1, ouro * 1.2)} />}
 
-      {/* chuva: riscos quando cai, gotas redondas quando fica suspensa */}
-      {gotas.map((g, i) =>
-        suspensa > 0.5 ? (
-          <ellipse key={i} cx={g.x} cy={g.y} rx={5} ry={8} fill="#dcebff" opacity={0.75} />
-        ) : (
-          <line key={i} x1={g.x} y1={g.y} x2={g.x - 8} y2={g.y + g.l} stroke="#cfe0ff" strokeWidth={3} opacity={0.4} />
-        ),
-      )}
+      {/* chuva: riscos quando cai, gotas redondas quando fica suspensa; nunca sobre Theo */}
+      {chuva > 0 &&
+        gotas.map((g, i) => {
+          if (Math.abs(g.x - seco[0]) < 78 && g.y > seco[1] - 470 && g.y < seco[1] + 10) return null;
+          return suspensa > 0.5 ? (
+            <ellipse key={i} cx={g.x} cy={g.y} rx={5} ry={8} fill="#dcebff" opacity={0.75 * chuva} />
+          ) : (
+            <line key={i} x1={g.x} y1={g.y} x2={g.x - 8} y2={g.y + g.l} stroke="#cfe0ff" strokeWidth={3} opacity={0.4 * chuva} />
+          );
+        })}
       <rect width={1080} height={1920} fill="#0a1020" opacity={0.18} />
       <rect x={0} y={0} width={1080} height={1920} fill="#ffffff" opacity={0.02 * Math.sin(t * 3)} />
     </g>
@@ -265,85 +311,93 @@ export const MesaCafe = ({ t }: { t: number }) => (
   </g>
 );
 
-type QuartoProps = { t: number; elenco: { theo: Visual; mae: Visual } };
+// Ícones simples das memórias guardadas nos relógios.
+const Memoria = ({ tipo, r }: { tipo: number; r: number }) => {
+  const c = "#b8741f";
+  const k = r / 40;
+  switch (tipo % 4) {
+    case 0: // duas pessoas de mãos dadas
+      return (
+        <g transform={`scale(${k})`} fill={c}>
+          <circle cx={-12} cy={-12} r={7} /><rect x={-18} y={-4} width={12} height={22} rx={5} />
+          <circle cx={12} cy={-12} r={7} /><rect x={6} y={-4} width={12} height={22} rx={5} />
+          <rect x={-8} y={2} width={16} height={4} />
+        </g>
+      );
+    case 1: // casa
+      return (
+        <g transform={`scale(${k})`} fill={c}>
+          <path d="M-20 0 L0 -20 L20 0Z" /><rect x={-14} y={0} width={28} height={18} /><rect x={-4} y={6} width={8} height={12} fill="#fbe9b0" />
+        </g>
+      );
+    case 2: // coração
+      return <path transform={`scale(${k})`} d="M0 16 Q-24 -2 -12 -14 Q-4 -20 0 -8 Q4 -20 12 -14 Q24 -2 0 16Z" fill={c} />;
+    default: // adulto e criança
+      return (
+        <g transform={`scale(${k})`} fill={c}>
+          <circle cx={-8} cy={-14} r={8} /><rect x={-15} y={-5} width={14} height={24} rx={5} />
+          <circle cx={12} cy={-2} r={6} /><rect x={7} y={5} width={10} height={14} rx={4} />
+        </g>
+      );
+  }
+};
 
-export const Quarto = ({ t, elenco }: QuartoProps) => {
-  const [fx, fy] = FOTO, [cx, cy] = CALENDARIO, [bx, by] = CAIXA;
-  const luz = 0.9 + 0.1 * Math.sin(t * 5) * Math.sin(t * 1.3);
+/** Número estável entre 0 e 1 para o item `i`. */
+const acaso = (i: number, k: number) => {
+  const v = Math.sin(i * 127.1 + k * 311.7) * 43758.5453;
+  return v - Math.floor(v);
+};
+
+/** O interior da relojoaria: espaço sem fim, estrelas e relógios com memórias luminosas. */
+export const Cosmos = ({ t }: { t: number }) => {
+  const estrelas = Array.from({ length: 170 }, (_, i) => ({
+    x: (i * 197) % 1080, y: (i * 389) % 1920, r: 1 + (i % 4) * 0.8, f: i * 0.7,
+  }));
+  const relogios = Array.from({ length: 44 }, (_, i) => {
+    const r = 20 + Math.floor(acaso(i, 3) * 5) * 16;
+    return {
+      x: 40 + acaso(i, 1) * 1000 + Math.sin(t * 0.4 + i) * 16,
+      y: 60 + acaso(i, 2) * 1560 + Math.cos(t * 0.33 + i * 1.7) * 22,
+      r, i,
+    };
+  }).sort((a, b) => a.r - b.r);
   return (
     <g>
       <defs>
-        <radialGradient id="abajur" cx="50%" cy="50%" r="50%">
-          <stop offset="0" stopColor="#ffd28a" stopOpacity="0.9" />
-          <stop offset="1" stopColor="#ffd28a" stopOpacity="0" />
+        <linearGradient id="espaco" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stopColor="#060822" />
+          <stop offset="0.6" stopColor="#1a1247" />
+          <stop offset="1" stopColor="#2b1a52" />
+        </linearGradient>
+        <radialGradient id="nebulosa" cx="50%" cy="50%" r="50%">
+          <stop offset="0" stopColor="#6d4bd1" stopOpacity="0.5" />
+          <stop offset="1" stopColor="#6d4bd1" stopOpacity="0" />
+        </radialGradient>
+        <radialGradient id="nebulosa2" cx="50%" cy="50%" r="50%">
+          <stop offset="0" stopColor="#2aa7b8" stopOpacity="0.35" />
+          <stop offset="1" stopColor="#2aa7b8" stopOpacity="0" />
+        </radialGradient>
+        <radialGradient id="aura" cx="50%" cy="50%" r="50%">
+          <stop offset="0" stopColor="#ffd98a" stopOpacity="0.8" />
+          <stop offset="1" stopColor="#ffd98a" stopOpacity="0" />
         </radialGradient>
       </defs>
-      <rect width={1080} height={1920} fill="#3b3440" />
-      {Array.from({ length: 10 }, (_, i) => (
-        <line key={i} x1={i * 120} y1={0} x2={i * 120} y2={1400} stroke="#463e4c" strokeWidth={4} />
+      <rect width={1080} height={1920} fill="url(#espaco)" />
+      <ellipse cx={260} cy={560} rx={620} ry={460} fill="url(#nebulosa)" />
+      <ellipse cx={860} cy={1240} rx={560} ry={520} fill="url(#nebulosa2)" />
+      <ellipse cx={540} cy={1700} rx={700} ry={360} fill="url(#aura)" opacity={0.35} />
+      {estrelas.map((e, i) => (
+        <circle key={i} cx={e.x} cy={e.y} r={e.r} fill="#fff" opacity={0.35 + 0.65 * Math.abs(Math.sin(t * 1.6 + e.f))} />
       ))}
-      <rect x={0} y={1400} width={1080} height={520} fill="#4f3b2c" />
-      {Array.from({ length: 5 }, (_, i) => <line key={i} x1={0} x2={1080} y1={1400 + i * 110} y2={1400 + i * 110} stroke="#3d2c20" strokeWidth={5} />)}
-      <circle cx={560} cy={900} r={720} fill="url(#abajur)" opacity={0.55 * luz} />
-
-      {/* janela com chuva lá fora */}
-      <rect x={640} y={110} width={300} height={260} fill="#26334a" stroke="#2a2430" strokeWidth={14} />
-      {Array.from({ length: 12 }, (_, i) => (
-        <line key={i} x1={660 + ((i * 53) % 260)} y1={120 + ((i * 97 + t * 400) % 230)} x2={654 + ((i * 53) % 260)} y2={146 + ((i * 97 + t * 400) % 230)} stroke="#b9d0f0" strokeWidth={3} opacity={0.5} />
+      {relogios.map(({ x, y, r, i }) => (
+        <g key={i} opacity={0.55 + 0.45 * Math.min(1, r / 70)}>
+          <circle cx={x} cy={y} r={r * 2.3} fill="url(#aura)" opacity={0.55 + 0.2 * Math.sin(t * 2 + i)} />
+          <rect x={x - r * 0.14} y={y - r * 1.3} width={r * 0.28} height={r * 0.34} rx={r * 0.08} fill="#b8923f" />
+          <circle cx={x} cy={y} r={r} fill="#fdf0c2" stroke="#e8c35a" strokeWidth={r * 0.12} />
+          {r > 34 && <g transform={`translate(${x} ${y + r * 0.1})`}><Memoria tipo={i} r={r * 0.62} /></g>}
+          <Ponteiros cx={x} cy={y} r={r * 0.92} tempo={t * (20 + (i % 5) * 30) + i * 900} cor="#7a5a2a" />
+        </g>
       ))}
-
-      {/* prateleira com a fotografia */}
-      <rect x={90} y={830} width={440} height={22} fill="#6b4a30" />
-      <rect x={110} y={852} width={14} height={50} fill="#4a3220" />
-      <rect x={496} y={852} width={14} height={50} fill="#4a3220" />
-      <rect x={fx - 130} y={fy - 150} width={260} height={290} rx={8} fill="#b8923f" stroke="#5a431c" strokeWidth={8} />
-      <rect x={fx - 108} y={fy - 128} width={216} height={246} fill="#cfe3d2" />
-      <clipPath id="moldura"><rect x={fx - 108} y={fy - 128} width={216} height={246} /></clipPath>
-      <g clipPath="url(#moldura)">
-        <circle cx={fx + 60} cy={fy - 90} r={40} fill="#ffe9a8" />
-        <g transform={`translate(${fx + 34} ${fy + 290}) scale(0.44)`}><Ator v={elenco.mae} t={0} expr="feliz" pose="abracar" fase={2} /></g>
-        <g transform={`translate(${fx - 44} ${fy + 300}) scale(0.34)`}><Ator v={elenco.theo} t={0} expr="feliz" fase={5} /></g>
-      </g>
-      <rect x={420} y={760} width={70} height={70} rx={10} fill="#7b5a3a" />
-      <rect x={130} y={780} width={24} height={50} fill="#8b3a3a" />
-      <rect x={156} y={770} width={22} height={60} fill="#3a5a8b" />
-
-      {/* calendário */}
-      <rect x={cx - 190} y={cy - 250} width={380} height={470} fill="#f3ecda" stroke="#2a2430" strokeWidth={8} />
-      <rect x={cx - 190} y={cy - 250} width={380} height={84} fill="#a3352b" />
-      <text x={cx} y={cy - 192} textAnchor="middle" fontFamily={FONT} fontSize={50} fill="#fff" letterSpacing={6}>DEZEMBRO</text>
-      {Array.from({ length: 4 }, (_, r) =>
-        Array.from({ length: 5 }, (_, c) => {
-          const x = cx - 160 + c * 64, y = cy - 140 + r * 62, n = r * 5 + c;
-          const alvo = n === 17;
-          return (
-            <g key={n}>
-              <rect x={x} y={y} width={56} height={54} fill="none" stroke="#bdb39a" strokeWidth={3} />
-              {n < 13 && <path d={`M${x + 10} ${y + 10} L${x + 46} ${y + 44} M${x + 46} ${y + 10} L${x + 10} ${y + 44}`} stroke="#4a4136" strokeWidth={5} />}
-              {alvo && <circle cx={x + 28} cy={y + 27} r={34} fill="none" stroke="#c0281f" strokeWidth={7} />}
-              {alvo && <path d={`M${x + 16} ${y + 26} q6 -14 12 0 q6 -14 12 0 q0 12 -12 20 q-12 -8 -12 -20Z`} fill="#c0281f" />}
-            </g>
-          );
-        }),
-      )}
-      <text x={cx} y={cy + 150} textAnchor="middle" fontFamily={FONT} fontSize={38} fill="#c0281f">O DIA EM QUE</text>
-      <text x={cx} y={cy + 196} textAnchor="middle" fontFamily={FONT} fontSize={44} fill="#c0281f">MAMÃE VOLTA</text>
-
-      {/* mesinha com o abajur e a caixa de moedas */}
-      <rect x={90} y={1290} width={440} height={30} fill="#6b4a30" />
-      <rect x={120} y={1320} width={22} height={330} fill="#4a3220" />
-      <rect x={480} y={1320} width={22} height={330} fill="#4a3220" />
-      <rect x={440} y={1180} width={16} height={110} fill="#2a2430" />
-      <path d="M392 1180 L504 1180 L480 1090 L416 1090Z" fill="#ffd28a" opacity={luz} />
-      <rect x={bx - 110} y={by - 10} width={220} height={86} rx={8} fill="#7a4a2a" stroke="#3d2412" strokeWidth={7} />
-      <rect x={bx - 122} y={by - 90} width={244} height={30} rx={8} fill="#8a5632" stroke="#3d2412" strokeWidth={7} transform={`rotate(-58 ${bx - 110} ${by - 10})`} />
-      {[[-70, 0], [-36, -8], [0, -2], [36, -10], [70, -1], [-52, -20], [-14, -22], [22, -24], [56, -20], [4, -40]].map(([dx, dy], i) => (
-        <ellipse key={i} cx={bx + dx} cy={by + dy} rx={22} ry={9} fill="#e8c35a" stroke="#8b6a1f" strokeWidth={3} />
-      ))}
-      {/* cama */}
-      <rect x={620} y={1250} width={460} height={150} rx={20} fill="#5b6d8f" />
-      <rect x={640} y={1200} width={170} height={80} rx={24} fill="#e9e3d6" />
-      <rect x={620} y={1380} width={460} height={60} fill="#3d2c20" />
     </g>
   );
 };

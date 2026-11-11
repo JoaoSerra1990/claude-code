@@ -6,10 +6,12 @@ import {
   Episodio, Som, decai, est as e, sobe, tempos,
   type Bloco, type Contexto, type Manifesto, type Shot,
 } from "../serie/motor";
-import { CAIXA, CALENDARIO, Cozinha, FOTO, MesaCafe, Quarto, RELOGIO_COZINHA, RELOGIO_RUA, Rua } from "./cenarios";
+import { Cosmos, Cozinha, MesaCafe, PORTA_RELOJOARIA, RELOGIO_COZINHA, RELOGIO_RUA, Rua } from "./cenarios";
 
 // O Menino que Vendia Minutos — história avulsa de 90 segundos.
 // Presente em azul frio, memória em dourado. A narração conduz; os planos mostram.
+// Theo é o Guardião das Memórias: não se molha, não tem reflexo e os relógios
+// param perto dele. Cada pessoa revive uma única lembrança real, por cinco minutos.
 
 const manifesto = manifestoJson as Manifesto;
 const FPS = manifesto.fps;
@@ -22,7 +24,6 @@ const ELENCO: Record<string, Visual> = {
   ArthurM: { pele: "#e3b696", cabelo: "#9a9ea6", roupa: "#7a5a3c", detalhe: "#e9e2d2", calca: "#3b3f4a", estilo: "curto", barbaCor: "#d9dce0", sobrancelha: "#8f939b" },
   Helena: { pele: "#eec7a8", cabelo: "#c4c7cd", roupa: "#3f6fb5", detalhe: "#f1ede4", calca: "#4a4e5a", estilo: "coque", sobrancelha: "#a4a8af" },
 };
-const MAE: Visual = { pele: "#edc09c", cabelo: "#6b4428", roupa: "#b85a7c", calca: "#3a3f4d", estilo: "longo" };
 
 const BLOCOS: Record<string, Bloco> = {
   ruaSo: { Theo: e(430, 1650, 0.56, "sereno", [0.3, 0], "apontarCima") },
@@ -38,7 +39,9 @@ const BLOCOS: Record<string, Bloco> = {
     ArthurM: e(330, 1640, 0.8, "feliz", [1, 0]),
     Helena: e(770, 1640, 0.76, "feliz", [-1, 0]),
   },
-  quarto: { Theo: e(560, 1700, 0.74, "sereno", [-1, 0.2]) },
+  porta: { Theo: e(430, 1650, 0.56, "sereno", [-0.4, 0]) },
+  cosmos: { Theo: e(540, 1760, 0.5, "sereno", [0, -1]) },
+  cosmosPerto: { Theo: e(540, 1790, 0.95, "sereno", [0.3, -0.6]) },
 };
 
 const ROSTO_THEO: [number, number] = [430, 1264];
@@ -48,8 +51,10 @@ const ROSTO_HELENA: [number, number] = [780, 1116];
 const [RX, RY] = RELOGIO_RUA;
 const [KX, KY] = RELOGIO_COZINHA;
 
+const [PX, PY] = PORTA_RELOJOARIA;
+
 const SHOTS: Shot[] = [
-  // 00–10 s | O gancho
+  // 00–10 s | Gancho
   { id: "abertura", de: 0, ate: pal("01", "todos") - 0.1, fundo: "rua", bloco: "ruaSo", luz: "fria",
     cam: [[540, 1050, 1.0], [450, 1300, 1.75]] },
   { id: "relogios_param", de: pal("01", "todos") - 0.1, ate: pal("01", "até") - 0.1, fundo: "rua", bloco: "ruaSo", luz: "fria",
@@ -57,19 +62,21 @@ const SHOTS: Shot[] = [
   { id: "theo_close", de: pal("01", "até") - 0.1, ate: fim("01") + 0.5, fundo: "rua", bloco: "ruaSo", luz: "fria",
     cam: [[ROSTO_THEO[0], ROSTO_THEO[1], 2.8], [ROSTO_THEO[0], ROSTO_THEO[1], 3.2]], at: { Theo: { olhar: [1, -0.3] } } },
 
-  // 10–22 s | A primeira compra
-  { id: "arthur_chega", de: fim("01") + 0.5, ate: pal("02", "não") - 0.1, fundo: "rua", bloco: "ruaDois", luz: "fria",
+  // 10–22 s | A compra
+  { id: "arthur_chega", de: fim("01") + 0.5, ate: pal("02", "carregava") - 0.35, fundo: "rua", bloco: "ruaDois", luz: "fria",
     cam: [[820, 1150, 1.45], [620, 1200, 1.6]],
     at: { Arthur: { x: 1190, xPara: 760 }, Theo: { pose: "apontarCima", olhar: [1, -0.4] } } },
-  { id: "moeda", de: pal("02", "não") - 0.1, ate: fim("02") + 0.3, fundo: "rua", bloco: "ruaDois", luz: "fria",
+  { id: "vitrine", de: pal("02", "carregava") - 0.35, ate: pal("02", "nenhuma") - 0.1, fundo: "rua", bloco: "ruaDois", luz: "fria",
+    cam: [[330, 1060, 1.9], [300, 1040, 2.3]], at: { Theo: { pose: "apontarCima", olhar: [1, -0.4] } } },
+  { id: "moeda", de: pal("02", "nenhuma") - 0.1, ate: fim("02") + 0.35, fundo: "rua", bloco: "ruaDois", luz: "fria",
     cam: [[560, 1320, 2.3], [560, 1310, 2.7]], at: { Arthur: { pose: "apontarEsq" }, Theo: { pose: "apontarDir", olhar: [1, -0.5] } } },
-  { id: "arthur_pergunta", de: fim("02") + 0.3, ate: fim("03") + 0.7, fundo: "rua", bloco: "ruaDois", luz: "fria",
+  { id: "arthur_pergunta", de: fim("02") + 0.35, ate: fim("03") + 0.7, fundo: "rua", bloco: "ruaDois", luz: "fria",
     cam: [[ROSTO_ARTHUR[0], ROSTO_ARTHUR[1] + 10, 2.5], [ROSTO_ARTHUR[0], ROSTO_ARTHUR[1], 2.9]] },
 
-  // 22–35 s | A resposta impossível
-  { id: "theo_relogio", de: fim("03") + 0.7, ate: pal("04", "apenas") - 0.1, fundo: "rua", bloco: "ruaDois", luz: "fria",
+  // 22–35 s | A passagem
+  { id: "theo_relogio", de: fim("03") + 0.7, ate: pal("04", "pediu") - 0.1, fundo: "rua", bloco: "ruaDois", luz: "fria",
     cam: [[430, 1370, 2.6], [430, 1350, 3.0]], at: { Theo: { pose: "abracar" } } },
-  { id: "chuva_para", de: pal("04", "apenas") - 0.1, ate: pal("04", "pensasse") - 0.1, fundo: "rua", bloco: "ruaDois", luz: "fria",
+  { id: "chuva_para", de: pal("04", "pediu") - 0.1, ate: pal("04", "pensasse") - 0.1, fundo: "rua", bloco: "ruaDois", luz: "fria",
     cam: [[600, 1240, 1.55], [600, 1225, 1.65]], at: { Arthur: { pose: "abracar", olhar: [-0.4, 1] } } },
   { id: "olhos_fechados", de: pal("04", "pensasse") - 0.1, ate: fim("04") + 0.5, fundo: "rua", bloco: "ruaDois", luz: "fria",
     cam: [[ROSTO_ARTHUR[0], ROSTO_ARTHUR[1] + 60, 2.2], [ROSTO_ARTHUR[0], ROSTO_ARTHUR[1] + 40, 2.6]],
@@ -78,13 +85,13 @@ const SHOTS: Shot[] = [
     cam: [[600, 1225, 1.65], [640, 1200, 1.9]], at: { Arthur: { pose: "abracar", fechado: true, expr: "sereno" } } },
 
   // 35–50 s | O reencontro
-  { id: "abre_olhos", de: ini("05") - 0.6, ate: pal("05", "arthur") - 0.1, fundo: "cozinha", bloco: "cozinha", luz: "dourada",
+  { id: "abre_olhos", de: ini("05") - 0.6, ate: pal("05", "estava") - 0.1, fundo: "cozinha", bloco: "cozinha", luz: "dourada",
     cam: [[ROSTO_ARTHUR_M[0], ROSTO_ARTHUR_M[1], 2.3], [ROSTO_ARTHUR_M[0], ROSTO_ARTHUR_M[1], 2.5]], at: { ArthurM: { fechado: true, expr: "sereno" } } },
-  { id: "onde_queria", de: pal("05", "arthur") - 0.1, ate: pal("05", "era") - 0.1, fundo: "cozinha", bloco: "cozinha", luz: "dourada",
+  { id: "onde_queria", de: pal("05", "estava") - 0.1, ate: pal("05", "três") - 0.1, fundo: "cozinha", bloco: "cozinha", luz: "dourada",
     cam: [[ROSTO_ARTHUR_M[0], ROSTO_ARTHUR_M[1], 2.5], [ROSTO_ARTHUR_M[0], ROSTO_ARTHUR_M[1], 2.7]] },
-  { id: "domingo", de: pal("05", "era") - 0.1, ate: pal("05", "helena") - 0.4, fundo: "cozinha", bloco: "cozinha", luz: "dourada",
+  { id: "domingo", de: pal("05", "três") - 0.1, ate: pal("05", "helena") - 0.35, fundo: "cozinha", bloco: "cozinha", luz: "dourada",
     cam: [[540, 1040, 1.05], [500, 1100, 1.3]], at: { ArthurM: { pose: "recuar", olhar: [0.3, 1] } } },
-  { id: "helena_viva", de: pal("05", "helena") - 0.4, ate: fim("05") + 0.4, fundo: "cozinha", bloco: "cozinha", luz: "dourada",
+  { id: "helena_viva", de: pal("05", "helena") - 0.35, ate: fim("05") + 0.4, fundo: "cozinha", bloco: "cozinha", luz: "dourada",
     cam: [[ROSTO_HELENA[0], ROSTO_HELENA[1] + 30, 1.9], [ROSTO_HELENA[0], ROSTO_HELENA[1], 2.4]], at: { Helena: { oculto: false } } },
   { id: "helena_fala", de: fim("05") + 0.4, ate: fim("06") + 0.4, fundo: "cozinha", bloco: "cozinha", luz: "dourada",
     cam: [[ROSTO_HELENA[0], ROSTO_HELENA[1], 2.5], [ROSTO_HELENA[0], ROSTO_HELENA[1], 2.7]],
@@ -93,51 +100,54 @@ const SHOTS: Shot[] = [
     cam: [[ROSTO_ARTHUR_M[0], ROSTO_ARTHUR_M[1], 2.6], [ROSTO_ARTHUR_M[0], ROSTO_ARTHUR_M[1], 2.9]],
     at: { ArthurM: { expr: "feliz", lagrima: true, olhar: [1, 0] } } },
 
-  // 50–65 s | Os últimos segundos
+  // 50–65 s | O valor do instante
   { id: "abraco", de: ini("07") - 0.1, ate: pal("07", "mas") - 0.1, fundo: "cozinha", bloco: "cozinha", luz: "dourada",
     cam: [[560, 1150, 1.6], [730, 1130, 2.0]],
     at: { ArthurM: { xPara: 680, expr: "feliz", pose: "abracar", lagrima: true, olhar: [1, 0] }, Helena: { oculto: false, expr: "feliz", pose: "abracar", olhar: [-1, 0] } } },
-  { id: "rindo", de: pal("07", "mas") - 0.1, ate: pal("07", "então") - 0.1, fundo: "cozinha", bloco: "mesa", luz: "dourada",
-    cam: [[550, 1210, 1.35], [550, 1200, 1.5]] },
-  { id: "maos", de: pal("07", "então") - 0.1, ate: fim("07") + 0.5, fundo: "cozinha", bloco: "mesa", luz: "dourada",
+  { id: "rindo", de: pal("07", "mas") - 0.1, ate: pal("07", "segurou") - 0.3, fundo: "cozinha", bloco: "mesa", luz: "dourada",
+    cam: [[550, 1210, 1.35], [550, 1200, 1.55]] },
+  { id: "maos", de: pal("07", "segurou") - 0.3, ate: fim("07") + 0.6, fundo: "cozinha", bloco: "mesa", luz: "dourada",
     cam: [[550, 1220, 2.2], [550, 1232, 3.0]],
     at: { ArthurM: { pose: "apontarDir", expr: "sereno" }, Helena: { pose: "apontarEsq", expr: "sereno" } } },
-  { id: "relogio_acelera", de: fim("07") + 0.5, ate: ini("08") - 1.3, fundo: "cozinha", bloco: "mesa", luz: "dourada",
+  { id: "relogio_acelera", de: fim("07") + 0.6, ate: ini("08") - 1.3, fundo: "cozinha", bloco: "mesa", luz: "dourada",
     cam: [[KX, KY, 2.2], [KX, KY, 3.0]] },
 
   // 65–78 s | O retorno
-  { id: "volta", de: ini("08") - 1.3, ate: pal("08", "menino") - 0.2, fundo: "rua", bloco: "ruaDois", luz: "fria",
-    cam: [[ROSTO_ARTHUR[0], ROSTO_ARTHUR[1], 2.4], [ROSTO_ARTHUR[0], ROSTO_ARTHUR[1], 2.7]],
+  { id: "volta", de: ini("08") - 1.3, ate: ini("08") - 0.15, fundo: "rua", bloco: "ruaDois", luz: "fria",
+    cam: [[ROSTO_ARTHUR[0], ROSTO_ARTHUR[1], 2.4], [ROSTO_ARTHUR[0], ROSTO_ARTHUR[1], 2.6]],
     at: { Arthur: { lagrima: true, olhar: [0, 0.4] } } },
-  { id: "theo_guarda", de: pal("08", "menino") - 0.2, ate: pal("08", "arthur") - 0.1, fundo: "rua", bloco: "ruaDois", luz: "fria",
-    cam: [[560, 1260, 1.5], [540, 1270, 1.65]], at: { Arthur: { lagrima: true, olhar: [-1, 0.6] }, Theo: { olhar: [0.4, 0.6] } } },
-  { id: "arthur_pede", de: pal("08", "arthur") - 0.1, ate: pal("08", "mas") - 0.1, fundo: "rua", bloco: "ruaDois", luz: "fria",
-    cam: [[620, 1260, 1.9], [600, 1270, 2.1]], at: { Arthur: { pose: "apontarEsq", lagrima: true } } },
-  { id: "theo_nega", de: pal("08", "mas") - 0.1, ate: fim("08") + 0.25, fundo: "rua", bloco: "ruaDois", luz: "fria",
-    cam: [[ROSTO_THEO[0], ROSTO_THEO[1], 2.9], [ROSTO_THEO[0], ROSTO_THEO[1], 3.1]],
-    at: { Theo: { nega: true, expr: "triste", olhar: [1, -0.6] }, Arthur: { pose: "apontarEsq" } } },
-  { id: "theo_fala", de: fim("08") + 0.25, ate: fim("09") + 0.6, fundo: "rua", bloco: "ruaDois", luz: "fria",
-    cam: [[ROSTO_THEO[0], ROSTO_THEO[1], 3.0], [ROSTO_THEO[0], ROSTO_THEO[1], 3.3]], at: { Theo: { olhar: [1, -0.8] } } },
+  { id: "arthur_pede", de: ini("08") - 0.15, ate: fim("08") + 0.25, fundo: "rua", bloco: "ruaDois", luz: "fria",
+    cam: [[620, 1260, 1.8], [600, 1270, 2.1]],
+    at: { Arthur: { pose: "apontarEsq", lagrima: true }, Theo: { pose: "abracar", olhar: [1, -0.8] } } },
+  { id: "theo_nega", de: fim("08") + 0.25, ate: pal("09", "algumas") - 0.1, fundo: "rua", bloco: "ruaDois", luz: "fria",
+    cam: [[ROSTO_THEO[0], ROSTO_THEO[1], 2.9], [ROSTO_THEO[0], ROSTO_THEO[1], 3.0]],
+    at: { Theo: { nega: true, expr: "triste", pose: "abracar", olhar: [1, -0.6] }, Arthur: { pose: "apontarEsq" } } },
+  { id: "theo_fala", de: pal("09", "algumas") - 0.1, ate: fim("09") + 0.3, fundo: "rua", bloco: "ruaDois", luz: "fria",
+    cam: [[ROSTO_THEO[0], ROSTO_THEO[1], 3.0], [ROSTO_THEO[0], ROSTO_THEO[1], 3.3]], at: { Theo: { pose: "abracar", olhar: [1, -0.8] } } },
+  { id: "quem_e_voce", de: fim("09") + 0.3, ate: fim("10") + 0.5, fundo: "rua", bloco: "ruaDois", luz: "fria",
+    cam: [[ROSTO_ARTHUR[0], ROSTO_ARTHUR[1], 2.6], [ROSTO_ARTHUR[0], ROSTO_ARTHUR[1], 3.0]],
+    at: { Arthur: { expr: "surpreso", lagrima: true, olhar: [-1, 0.7] } } },
+  { id: "theo_silencio", de: fim("10") + 0.5, ate: ini("11") - 0.3, fundo: "rua", bloco: "ruaDois", luz: "fria",
+    cam: [[ROSTO_THEO[0], ROSTO_THEO[1], 3.1], [ROSTO_THEO[0], ROSTO_THEO[1], 3.4]], at: { Theo: { expr: "feliz", olhar: [1, -0.8] } } },
 
-  // 78–90 s | A reviravolta
-  { id: "arthur_vai", de: fim("09") + 0.6, ate: ini("10") - 0.7, fundo: "rua", bloco: "ruaDois", luz: "fria",
+  // 78–90 s | Revelação final
+  { id: "arthur_vai", de: ini("11") - 0.3, ate: pal("11", "theo") - 0.1, fundo: "rua", bloco: "ruaDois", luz: "fria",
     cam: [[560, 1160, 1.15], [540, 1180, 1.3]], at: { Arthur: { xPara: 1260, expr: "sereno", olhar: [1, 0.3] }, Theo: { olhar: [1, 0] } } },
-  { id: "quarto", de: ini("10") - 0.7, ate: pal("10", "theo") - 0.1, fundo: "quarto", bloco: "quarto", luz: "abajur",
-    cam: [[560, 1100, 1.1], [500, 1090, 1.3]], at: { Theo: { x: 1150, xPara: 560 } } },
-  { id: "foto", de: pal("10", "theo") - 0.1, ate: pal("10", "ele") - 0.1, fundo: "quarto", bloco: "quarto", luz: "abajur",
-    cam: [[FOTO[0], FOTO[1], 2.4], [FOTO[0], FOTO[1], 3.3]] },
-  { id: "caixa", de: pal("10", "ele") - 0.1, ate: pal("10", "comprar") - 0.1, fundo: "quarto", bloco: "quarto", luz: "abajur",
-    cam: [[370, 1230, 1.9], [340, 1220, 2.4]], at: { Theo: { pose: "apontarEsq", olhar: [-1, 0.6] } } },
-  { id: "calendario", de: pal("10", "comprar") - 0.1, ate: fim("10") + 1.3, fundo: "quarto", bloco: "quarto", luz: "abajur",
-    cam: [[CALENDARIO[0], CALENDARIO[1] - 20, 1.9], [CALENDARIO[0], CALENDARIO[1] + 60, 2.9]] },
-  { id: "moeda_final", de: fim("10") + 1.3, ate: PRETO, fundo: "quarto", bloco: "quarto", luz: "abajur",
-    cam: [[CAIXA[0], CAIXA[1] - 10, 3.0], [CAIXA[0], CAIXA[1] - 10, 4.4]] },
+  { id: "porta", de: pal("11", "theo") - 0.1, ate: pal("11", "tão") - 0.1, fundo: "rua", bloco: "porta", luz: "fria",
+    cam: [[470, 1180, 1.6], [PX, PY + 60, 2.2]], at: { Theo: { x: 580, xPara: 450, yPara: 1470 } } },
+  { id: "cosmos", de: pal("11", "tão") - 0.1, ate: pal("11", "ele") - 0.1, fundo: "cosmos", bloco: "cosmos", luz: "noite",
+    cam: [[540, 1000, 1.0], [540, 940, 1.2]], at: { Theo: { yPara: 1640 } } },
+  { id: "memorias", de: pal("11", "ele") - 0.1, ate: pal("11", "mas") - 0.2, fundo: "cosmos", luz: "noite",
+    cam: [[330, 620, 1.9], [720, 900, 2.1]] },
+  { id: "theo_final", de: pal("11", "mas") - 0.2, ate: PRETO, fundo: "cosmos", bloco: "cosmosPerto", luz: "noite",
+    cam: [[540, 1150, 1.5], [540, 1138, 1.9]], at: { Theo: { expr: "feliz" } } },
 ];
 
 const plano = (id: string) => SHOTS.find((s) => s.id === id)!;
 const P_PARAM = plano("relogios_param"), P_RELOGIO = plano("theo_relogio"), P_CHUVA = plano("chuva_para");
-const P_PONT = plano("ponteiros"), P_ACEL = plano("relogio_acelera"), P_VOLTA = plano("volta"), P_QUARTO = plano("quarto");
-const P_MOEDA = plano("moeda"), P_CAIXA = plano("caixa"), P_PEDE = plano("arthur_pede"), P_GUARDA = plano("theo_guarda");
+const P_PONT = plano("ponteiros"), P_ACEL = plano("relogio_acelera"), P_VOLTA = plano("volta");
+const P_MOEDA = plano("moeda"), P_PEDE = plano("arthur_pede"), P_VAI = plano("arthur_vai");
+const P_PORTA = plano("porta"), P_COSMOS = plano("cosmos"), P_VITRINE = plano("vitrine");
 
 const T_PARA = P_PARAM.de + 0.7;      // os relógios da rua param
 const T_SUSPENDE = P_CHUVA.de + 1.0;  // a chuva fica suspensa
@@ -149,14 +159,21 @@ const cenario = ({ t, shot }: Contexto) => {
     const acel = Math.max(0, t - P_ACEL.de);
     return <Cozinha t={t} tRelogio={33000 + t * 2 + acel ** 3 * 500} brilho={sobe(t, P_ACEL.de + 0.4, P_ACEL.ate)} />;
   }
-  if (shot.fundo === "quarto") return <Quarto t={t} elenco={{ theo: ELENCO.Theo, mae: MAE }} />;
+  if (shot.fundo === "cosmos") return <Cosmos t={t} />;
   const suspensa = t >= T_SUSPENDE && t < T_VOLTA;
   const tChuva = t < T_SUSPENDE ? t : suspensa ? T_SUSPENDE : t - (T_VOLTA - T_SUSPENDE);
   const reverso = t >= P_PONT.de && t < T_VOLTA ? (t - P_PONT.de) ** 2 * 900 : 0;
-  const tRelogio = 37000 + Math.min(t, T_PARA) - reverso;
+  // Os relógios param por um instante perto de Theo e depois voltam a andar.
+  const parado = t < T_PARA ? t : t < T_PARA + 1.2 ? T_PARA : t - 1.2;
   const comArthur = t >= P_CHUVA.de;
   const ouro = t < P_RELOGIO.de || t >= T_VOLTA ? 0 : t < P_PONT.de ? 0.16 + 0.03 * Math.sin(t * 5) : 0.2 + sobe(t, P_PONT.de, T_OURO) * 0.9;
-  return <Rua t={t} tChuva={tChuva} tRelogio={tRelogio} suspensa={suspensa ? 1 : 0} ouro={ouro} ouroEm={comArthur ? [760, 1368] : [430, 1436]} />;
+  return (
+    <Rua t={t} tChuva={tChuva} tRelogio={37000 + parado - reverso} suspensa={suspensa ? 1 : 0}
+      ouro={ouro} ouroEm={comArthur ? [760, 1368] : [430, 1436]}
+      chuva={1 - sobe(t, P_VAI.de + 0.6, P_PORTA.de)} seco={[430, 1650]}
+      reflexo={t >= P_VITRINE.de - 0.5 && t < P_MOEDA.de ? ELENCO.Arthur : undefined}
+      porta={sobe(t, P_PORTA.de + 0.5, P_PORTA.ate - 0.3)} />
+  );
 };
 
 const Placa = ({ x, y, giro }: { x: number; y: number; giro: number }) => (
@@ -192,14 +209,15 @@ const Moeda = ({ x, y, r = 16 }: { x: number; y: number; r?: number }) => (
 const itens = ({ t, shot, p }: Contexto) => {
   const lista: { y: number; el: React.ReactNode }[] = [];
   if (shot.fundo === "rua") {
-    // A placa: erguida no começo, encostada no poste durante a venda, debaixo do braço no fim.
+    // A placa: erguida no começo, depois encostada na parede da relojoaria.
     const erguida = t < P_MOEDA.de;
-    const guardada = t >= P_GUARDA.de;
     lista.push({
-      y: guardada ? 1651 : erguida ? 1651 : 1300,
-      el: <Placa key="placa" x={erguida ? 522 : guardada ? 372 : 250} y={erguida ? 1372 : guardada ? 1500 : 1640} giro={erguida ? 0 : guardada ? -68 : -10} />,
+      y: erguida ? 1651 : 1300,
+      el: <Placa key="placa" x={erguida ? 522 : 250} y={erguida ? 1372 : 1640} giro={erguida ? 0 : -10} />,
     });
-    if (shot.id === "theo_relogio") lista.push({ y: 1660, el: <RelogioBolso key="rel" x={430} y={1436} r={30} tempo={t} /> });
+    // O relógio de bolso: com Theo, depois nas mãos de Arthur, e de volta com Theo.
+    const comTheo = shot.id === "theo_relogio" || (t >= T_VOLTA && t < P_VAI.de);
+    if (comTheo) lista.push({ y: 1660, el: <RelogioBolso key="rel" x={430} y={1436} r={30} tempo={t} /> });
     if (t >= P_CHUVA.de && t < T_VOLTA) {
       lista.push({ y: 1680, el: <RelogioBolso key="rel" x={760} y={1368} r={34} tempo={t >= P_PONT.de ? -((t - P_PONT.de) ** 2) * 60 : t} /> });
     }
@@ -207,10 +225,6 @@ const itens = ({ t, shot, p }: Contexto) => {
     if (shot.id === "arthur_pede" || shot.id === "theo_nega") lista.push({ y: 1690, el: <Moeda key="moeda" x={525} y={1254} /> });
   }
   if (shot.fundo === "cozinha" && shot.bloco === "mesa") lista.push({ y: 1700, el: <MesaCafe key="mesa" t={t} /> });
-  if (shot.id === "caixa") {
-    const q = sobe(t, P_CAIXA.de + 0.5, P_CAIXA.de + 1.0);
-    if (q < 1) lista.push({ y: 1800, el: <Moeda key="moeda" x={330} y={1040 + q * q * 160} r={18} /> });
-  }
   return lista;
 };
 
@@ -231,20 +245,22 @@ const sobre = ({ t }: Contexto) => {
 const fx = ({ t }: Contexto) => {
   const ouro = Math.max(sobe(t, T_OURO - 0.7, T_OURO) * (t < T_OURO ? 1 : 0), decai(t, T_OURO, 1.3));
   const branco = Math.max(sobe(t, T_VOLTA - 0.7, T_VOLTA) * (t < T_VOLTA ? 1 : 0), decai(t, T_VOLTA, 1.2));
-  const troca = decai(t, P_QUARTO.de, 0.5) * 0.9;
+  // Atravessar a porta: a luz de dentro toma a tela e se desfaz no espaço dos relógios.
+  const porta = Math.max(sobe(t, P_COSMOS.de - 0.5, P_COSMOS.de) * (t < P_COSMOS.de ? 1 : 0), decai(t, P_COSMOS.de, 1.0));
   return ouro > 0
     ? { clarao: ouro, claraoCor: "#ffe7a8" }
     : branco > 0
       ? { clarao: branco, claraoCor: "#fff6dc" }
-      : { clarao: troca, claraoCor: "#000" };
+      : { clarao: porta, claraoCor: "#fff0c4" };
 };
 
 const Final = ({ t }: { t: number }) => (
-  <AbsoluteFill style={{ alignItems: "center", justifyContent: "center", padding: "0 90px", textAlign: "center", fontFamily: FONT, color: "#f3ead2", fontSize: 92, lineHeight: 1.2, opacity: interpolate(t, [PRETO + 0.5, PRETO + 1.3], [0, 1], { extrapolateLeft: "clamp", extrapolateRight: "clamp" }) }}>
+  <AbsoluteFill style={{ alignItems: "center", justifyContent: "center", padding: "0 80px", textAlign: "center", fontFamily: FONT, color: "#f3ead2", fontSize: 84, lineHeight: 1.22, opacity: interpolate(t, [PRETO + 0.5, PRETO + 1.3], [0, 1], { extrapolateLeft: "clamp", extrapolateRight: "clamp" }) }}>
     <div>
-      QUANTO VALEM<br />
+      SE VOCÊ TIVESSE<br />
       <span style={{ color: "#e8c35a" }}>CINCO MINUTOS</span><br />
-      COM QUEM VOCÊ AMA?
+      COM ALGUÉM DO PASSADO,<br />
+      QUEM ESCOLHERIA?
     </div>
   </AbsoluteFill>
 );
@@ -264,10 +280,9 @@ export const Minutos = () => (
         <Som fps={FPS} em={P_MOEDA.de + 1.2} src={`${S}moeda.mp3`} volume={0.6} />
         <Som fps={FPS} em={P_PONT.de - 0.2} src={`${S}reverso.mp3`} volume={0.7} />
         <Som fps={FPS} em={P_ACEL.de} src={`${S}acelera.mp3`} volume={0.6} />
-        <Som fps={FPS} em={T_VOLTA + 0.2} src={`${S}chuva.mp3`} volume={0.35} dur={P_QUARTO.de - T_VOLTA - 0.2} />
+        <Som fps={FPS} em={T_VOLTA + 0.2} src={`${S}chuva.mp3`} volume={0.35} dur={P_VAI.de + 1.0 - T_VOLTA} />
         <Som fps={FPS} em={P_PEDE.de + 0.4} src={`${S}moeda.mp3`} volume={0.35} />
-        <Som fps={FPS} em={P_CAIXA.de + 1.0} src={`${S}moeda.mp3`} volume={0.8} />
-        <Som fps={FPS} em={PRETO + 0.3} src={`${S}sino.mp3`} volume={0.9} />
+        <Som fps={FPS} em={P_PORTA.de + 0.6} src={`${S}reverso.mp3`} volume={0.4} />
       </>
     }
   />
