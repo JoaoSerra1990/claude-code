@@ -26,26 +26,29 @@ export type Est = {
   x: number; y: number; s: number;
   expr: Expr; pose: PoseA; olhar: [number, number];
   xPara?: number; yPara?: number; tremor?: boolean; oculto?: boolean;
+  /** Olhos fechados, lágrima no rosto e cabeça balançando em negativa. */
+  fechado?: boolean; lagrima?: boolean; nega?: boolean;
 };
-export type Bloco = Record<Nome, Est>;
+export type Bloco = Record<string, Est>;
 export const est = (
   x: number, y: number, s: number, expr: Expr = "medo",
   olhar: [number, number] = [0, 0], pose: PoseA = "parado",
 ): Est => ({ x, y, s, expr, pose, olhar });
 
 /** Posição do rosto de um ator, em coordenadas de mundo. */
-export const rosto = (b: Bloco, n: Nome): [number, number] => [b[n].x, b[n].y - 690 * b[n].s];
+export const rosto = (b: Bloco, n: string): [number, number] => [b[n].x, b[n].y - 690 * b[n].s];
 
 export type Cam = [number, number, number]; // centro x, centro y, zoom
-export type Luz = "normal" | "vermelha" | "ciano" | "pisca" | "noite";
+export type Luz = "normal" | "vermelha" | "ciano" | "pisca" | "noite" | "fria" | "dourada" | "abajur";
 export type Shot = {
   id: string; de: number; ate: number;
-  fundo: "sala" | "patio" | "fachada" | "preto";
+  /** "sala", "patio" e "fachada" são da série; outros nomes pedem um `cenario` próprio. */
+  fundo: string;
   cam: [Cam, Cam];
   luz?: Luz; tremor?: number; bloco?: string; mesa?: boolean;
   /** Permite que a câmera desça abaixo do piso da sala. */
   subsolo?: boolean;
-  at?: Partial<Record<Nome, Partial<Est>>>;
+  at?: Record<string, Partial<Est>>;
 };
 
 export type Palavra = { text: string; start: number; end: number };
@@ -59,6 +62,9 @@ export type Fx = {
   impacto?: number;
   /** Clarão branco, de 0 a 1. */
   flash?: number;
+  /** Clarão que toma a tela inteira (transições), de 0 a 1, e sua cor. */
+  clarao?: number;
+  claraoCor?: string;
 };
 
 /** Ajudantes para marcar tempos a partir das falas. */
@@ -102,12 +108,20 @@ type Props = {
   /** Conteúdo mostrado sobre a tela preta final. */
   final?: (t: number) => ReactNode;
   corLegenda?: (personagem: string) => string;
+  /** Elenco do projeto; por padrão, o da série. */
+  elenco?: Record<string, Visual>;
+  /** Desenha o fundo de planos cujo `fundo` não é da série. */
+  cenario?: (c: Contexto) => ReactNode;
+  legendas?: boolean;
   /** Faixa contínua de fundo, em loop até o corte para preto. */
   trilha?: string;
   sons?: ReactNode;
 };
 
-export const Episodio = ({ manifesto, shots, blocos, preto, fx, itens, frente, sobre, final, corLegenda, trilha, sons }: Props) => {
+export const Episodio = ({
+  manifesto, shots, blocos, preto, fx, itens, frente, sobre, final, corLegenda, trilha, sons,
+  elenco = VISUAL, cenario, legendas = true,
+}: Props) => {
   const frame = useCurrentFrame();
   const fps = manifesto.fps;
   const t = frame / fps;
@@ -141,30 +155,35 @@ export const Episodio = ({ manifesto, shots, blocos, preto, fx, itens, frente, s
     ciano: "rgba(10,70,96,0.36)",
     pisca: `rgba(4,6,14,${apagao < 0.5 ? 0.7 : 0.3})`,
     noite: "rgba(6,10,30,0.2)",
+    fria: "rgba(188,204,232,0.95)",
+    dourada: "rgba(255,226,176,0.95)",
+    abajur: "rgba(214,168,112,0.95)",
   };
 
   // atores e objetos do plano, ordenados por profundidade
   const bloco = shot.bloco ? blocos[shot.bloco] : null;
+  const nomes = Object.keys(elenco);
   const atores = bloco
-    ? NOMES.filter((nome) => !({ ...bloco[nome], ...(shot.at?.[nome] ?? {}) }).oculto).map((nome) => {
+    ? Object.keys(bloco).filter((nome) => !({ ...bloco[nome], ...(shot.at?.[nome] ?? {}) }).oculto).map((nome) => {
         const e = { ...bloco[nome], ...(shot.at?.[nome] ?? {}) };
         const x = e.xPara !== undefined ? lerp(e.x, e.xPara) : e.x;
         const y = e.yPara !== undefined ? lerp(e.y, e.yPara) : e.y;
         const andando = (e.xPara !== undefined || e.yPara !== undefined) && p > 0.02 && p < 0.98;
-        const i = NOMES.indexOf(nome);
+        const i = nomes.indexOf(nome);
         return {
           y,
           el: (
             <g key={nome} transform={`translate(${x} ${y}) scale(${e.s})`}>
               <ellipse cx={0} cy={0} rx={120} ry={22} fill="#000" opacity={0.35} />
-              <Ator v={VISUAL[nome]} t={t} expr={e.expr} pose={e.pose} olhar={e.olhar}
-                falando={fala?.p === nome && falando} andando={andando} tremor={e.tremor} fase={i * 1.9} />
+              <Ator v={elenco[nome]} t={t} expr={e.expr} pose={e.pose} olhar={e.olhar}
+                falando={fala?.p === nome && falando} andando={andando} tremor={e.tremor}
+                fechado={e.fechado} lagrima={e.lagrima} nega={e.nega} fase={i * 1.9} />
             </g>
           ) as ReactNode,
         };
       })
     : [];
-  const cena = [...atores, ...(shot.fundo === "sala" ? itens?.(ctx) ?? [] : [])].sort((a, b) => a.y - b.y);
+  const cena = [...atores, ...(itens?.(ctx) ?? [])].sort((a, b) => a.y - b.y);
 
   const palavras: Word[] = manifesto.falas.flatMap((f) =>
     f.palavras.map((w) => ({ ...w, color: corLegenda?.(f.p) ?? COLORS.white })),
@@ -179,8 +198,9 @@ export const Episodio = ({ manifesto, shots, blocos, preto, fx, itens, frente, s
             {shot.fundo === "patio" && <Patio t={t} />}
             {shot.fundo === "fachada" && <Fachada t={t} />}
             {shot.fundo === "sala" && <Sala t={t} luz={nivelLuz} mesa={!!shot.mesa} {...efeitos.sala} />}
+            {!["sala", "patio", "fachada"].includes(shot.fundo) && cenario?.(ctx)}
             {cena.map((c) => c.el)}
-            {shot.fundo === "sala" && frente?.(ctx)}
+            {frente?.(ctx)}
           </svg>
           <AbsoluteFill style={{ background: tinta[luzTipo], mixBlendMode: "multiply" }} />
           {(luzTipo === "vermelha" || luzTipo === "ciano") && (
@@ -191,8 +211,11 @@ export const Episodio = ({ manifesto, shots, blocos, preto, fx, itens, frente, s
         </>
       )}
       {!escuro && sobre?.(ctx)}
+      {!escuro && (efeitos.clarao ?? 0) > 0 && (
+        <AbsoluteFill style={{ background: efeitos.claraoCor ?? "#fff", opacity: efeitos.clarao }} />
+      )}
       {escuro && final?.(t)}
-      {!escuro && <WordCaptions words={palavras} perLine={3} y={0.69} size={86} />}
+      {!escuro && legendas && <WordCaptions words={palavras} perLine={3} y={0.69} size={86} />}
 
       {manifesto.falas.map((f) => (
         <Sequence key={f.n} from={Math.round(f.inicio * fps)}>

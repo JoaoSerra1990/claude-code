@@ -21,11 +21,11 @@ def gerar(voice_id, texto, saida_mp3):
 def main(entrada, pasta):
     os.makedirs(pasta, exist_ok=True)
     falas = json.load(open(entrada, encoding="utf-8"))
-    ep = os.path.basename(entrada)[2:4]
+    projeto = os.path.basename(entrada).replace("_falas.json", "")
     for f in falas:
-        nome = f"ep{ep}_{f['n']}_{f['p'].lower().replace('í','i')}"
+        nome = f"{projeto}_{f['n']}_{f['p'].lower().replace('í','i')}"
         texto = f"{f['emo']} {f['t']}"
-        alinhamento = gerar(ELENCO["vozes"][f["p"]], texto, os.path.join(pasta, nome + ".mp3"))
+        alinhamento = gerar(ELENCO["vozes"][f.get("voz", f["p"])], texto, os.path.join(pasta, nome + ".mp3"))
         with open(os.path.join(pasta, nome + ".json"), "w", encoding="utf-8") as j:
             json.dump(alinhamento, j, ensure_ascii=False)
         print("ok", nome, flush=True)

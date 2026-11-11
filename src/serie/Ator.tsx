@@ -4,7 +4,7 @@
 
 export type Expr =
   | "neutro" | "medo" | "bravo" | "firme" | "desconfiado"
-  | "panico" | "triste" | "surpreso" | "congelado";
+  | "panico" | "triste" | "surpreso" | "congelado" | "feliz" | "sereno";
 
 export type PoseA =
   | "parado" | "apontarDir" | "apontarEsq" | "apontarCima"
@@ -16,10 +16,17 @@ export type Visual = {
   roupa: string;
   detalhe?: string;
   calca: string;
-  estilo: "curto" | "rabo" | "cacheado" | "longo" | "gorro" | "grisalho";
+  estilo: "curto" | "rabo" | "cacheado" | "longo" | "gorro" | "grisalho" | "coque" | "baguncado";
   oculos?: boolean;
   gravata?: boolean;
   barba?: boolean;
+  /** Barba curta cheia, nesta cor. */
+  barbaCor?: string;
+  /** Casaco comprido, até os joelhos. */
+  casaco?: boolean;
+  /** Bolsa transversal, nesta cor. */
+  bolsa?: string;
+  sobrancelha?: string;
 };
 
 type Props = {
@@ -33,6 +40,10 @@ type Props = {
   andando?: boolean;
   tremor?: boolean;
   zumbi?: boolean;
+  fechado?: boolean;
+  lagrima?: boolean;
+  /** Balança a cabeça em negativa. */
+  nega?: boolean;
   /** Defasagem para que os atores não se mexam em sincronia. */
   fase?: number;
 };
@@ -50,6 +61,8 @@ const ROSTOS: Record<Expr, Rosto> = {
   triste: { b: -8, up: 2, olho: 0.9, pupila: 10, boca: "triste" },
   surpreso: { b: -3, up: 14, olho: 1.28, pupila: 8, boca: "o" },
   congelado: { b: -10, up: 12, olho: 1.35, pupila: 5, boca: "tensa", suor: true },
+  feliz: { b: -3, up: 5, olho: 0.92, pupila: 11, boca: "sorriso" },
+  sereno: { b: 0, up: 1, olho: 0.9, pupila: 11, boca: "leve" },
 };
 
 const bracos = (pose: PoseA, t: number, fase: number): [number, number] => {
@@ -110,6 +123,24 @@ const Cabelo = ({ v }: { v: Visual }) => {
           <path d="M-70 -778 Q0 -806 70 -778" stroke={c} strokeWidth={12} fill="none" strokeLinecap="round" />
         </>
       );
+    case "coque":
+      return (
+        <>
+          <circle cx={0} cy={-806} r={40} fill={c} />
+          <path d={calota} fill={c} />
+          <path d="M-100 -706 Q-40 -770 30 -730 Q70 -712 100 -706 L100 -744 Q0 -826 -100 -744Z" fill={c} />
+        </>
+      );
+    case "baguncado":
+      return (
+        <>
+          <path d={calota} fill={c} />
+          {[[-92, -742, -30], [-56, -776, -14], [-14, -792, 0], [30, -788, 14], [70, -764, 28], [100, -726, 44]].map(
+            ([x, y, r], i) => <path key={i} d="M-22 14 L0 -40 L22 14Z" transform={`translate(${x} ${y}) rotate(${r})`} fill={c} />,
+          )}
+          <path d="M-98 -716 Q-50 -690 -6 -730 Q30 -700 98 -722 L96 -752 Q0 -810 -96 -752Z" fill={c} />
+        </>
+      );
     default:
       return (
         <>
@@ -122,7 +153,8 @@ const Cabelo = ({ v }: { v: Visual }) => {
 
 export const Ator = ({
   v, t, expr = "neutro", pose = "parado", olhar = [0, 0],
-  falando = false, andando = false, tremor = false, zumbi = false, fase = 0,
+  falando = false, andando = false, tremor = false, zumbi = false,
+  fechado = false, lagrima = false, nega = false, fase = 0,
 }: Props) => {
   const r = ROSTOS[expr];
   const pele = zumbi ? "#8aa085" : v.pele;
@@ -172,6 +204,8 @@ export const Ator = ({
       case "triste": return <path d="M-22 -622 Q0 -642 22 -622" fill="none" stroke={TINTA} strokeWidth={8} strokeLinecap="round" />;
       case "medo": return <ellipse cx={0} cy={-630} rx={15} ry={9} fill="#5a1620" />;
       case "grito": return <ellipse cx={0} cy={-628} rx={26} ry={24} fill="#5a1620" />;
+      case "sorriso": return <path d="M-32 -642 Q0 -604 32 -642" fill="none" stroke={TINTA} strokeWidth={8} strokeLinecap="round" />;
+      case "leve": return <path d="M-20 -636 Q0 -622 20 -636" fill="none" stroke={TINTA} strokeWidth={8} strokeLinecap="round" />;
       case "o": return <ellipse cx={0} cy={-630} rx={13} ry={17} fill="#5a1620" />;
       default: return <line x1={-22} y1={-630} x2={22} y2={-630} stroke={TINTA} strokeWidth={8} strokeLinecap="round" />;
     }
@@ -185,7 +219,7 @@ export const Ator = ({
     const fora = y - r.b;
     const x1 = lado * 14;
     const x2 = lado * 68;
-    return <line x1={x1} y1={dentro} x2={x2} y2={fora} stroke={zumbi ? "transparent" : v.estilo === "grisalho" ? "#6f737b" : TINTA} strokeWidth={9} strokeLinecap="round" />;
+    return <line x1={x1} y1={dentro} x2={x2} y2={fora} stroke={zumbi ? "transparent" : v.sobrancelha ?? (v.estilo === "grisalho" ? "#6f737b" : TINTA)} strokeWidth={9} strokeLinecap="round" />;
   };
 
   return (
@@ -202,6 +236,14 @@ export const Ator = ({
       <g transform={`translate(0 ${respira * 0.5})`}>
         {v.estilo === "longo" && <rect x={-112} y={-770} width={224} height={250} rx={70} fill={v.cabelo} />}
         <rect x={-98} y={-562} width={196} height={326} rx={54} fill={roupa} />
+        {v.casaco && <path d="M-98 -300 L-108 -92 L108 -92 L98 -300Z" fill={roupa} />}
+        {v.casaco && <line x1={0} y1={-540} x2={0} y2={-96} stroke="#000" strokeOpacity={0.25} strokeWidth={6} />}
+        {v.bolsa && (
+          <g>
+            <line x1={-78} y1={-556} x2={88} y2={-300} stroke={v.bolsa} strokeWidth={16} />
+            <rect x={56} y={-320} width={78} height={70} rx={12} fill={v.bolsa} stroke="#1c140e" strokeWidth={5} />
+          </g>
+        )}
         {v.detalhe && v.estilo !== "gorro" && (
           <rect x={-30} y={-560} width={60} height={322} fill={v.detalhe} opacity={0.9} />
         )}
@@ -217,19 +259,25 @@ export const Ator = ({
 
         {/* pescoço e cabeça */}
         <rect x={-24} y={-604} width={48} height={56} fill={pele} />
-        <g transform={`rotate(${zumbi ? 9 + balanco : py * 0.4} 0 -600)`}>
+        <g transform={`rotate(${zumbi ? 9 + balanco : py * 0.4 + (nega ? Math.sin(t * 7) * 9 : 0)} 0 -600)`}>
           <ellipse cx={0} cy={-690} rx={102} ry={110} fill={pele} />
           {v.barba && <path d="M-90 -660 Q-70 -580 0 -578 Q70 -580 90 -660 Q60 -610 0 -612 Q-60 -610 -90 -660Z" fill="#000" opacity={0.2} />}
+          {v.barbaCor && <path d="M-100 -676 Q-96 -574 0 -566 Q96 -574 100 -676 Q70 -640 0 -650 Q-70 -640 -100 -676Z" fill={v.barbaCor} />}
           <Cabelo v={zumbi ? { ...v, cabelo: "#2c332b" } : v} />
 
           {/* olhos */}
-          {([-1, 1] as const).map((lado) => (
-            <g key={lado} transform={`translate(${lado * 41} -694) scale(1 ${olhoY})`}>
-              {zumbi && <circle r={36} fill="#4f5f4c" opacity={0.55} />}
-              <circle r={28} fill="#ffffff" stroke={TINTA} strokeWidth={5} />
-              {!zumbi && <circle cx={px} cy={py} r={r.pupila} fill={TINTA} />}
-            </g>
-          ))}
+          {([-1, 1] as const).map((lado) =>
+            fechado ? (
+              <path key={lado} d="M-24 0 Q0 16 24 0" transform={`translate(${lado * 41} -694)`} fill="none" stroke={TINTA} strokeWidth={7} strokeLinecap="round" />
+            ) : (
+              <g key={lado} transform={`translate(${lado * 41} -694) scale(1 ${olhoY})`}>
+                {zumbi && <circle r={36} fill="#4f5f4c" opacity={0.55} />}
+                <circle r={28} fill="#ffffff" stroke={TINTA} strokeWidth={5} />
+                {!zumbi && <circle cx={px} cy={py} r={r.pupila} fill={TINTA} />}
+              </g>
+            ),
+          )}
+          {lagrima && <path d="M0 0 Q9 16 0 24 Q-9 16 0 0Z" transform={`translate(-48 ${-662 + ((t * 26 + fase * 9) % 44)})`} fill="#a9dcff" />}
           {sobr(-1)}
           {sobr(1)}
           {v.oculos && !zumbi && (

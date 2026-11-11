@@ -1,10 +1,10 @@
 """Prepara um episódio: exporta as falas no ritmo da série e monta a linha do tempo.
 
-Uso: python3 scripts/preparar.py 02
+Uso: python3 scripts/preparar.py ep02
 
-Lê out/epNN/falas (gerado por gerar_falas.py) e escreve:
-  public/epNN/falas/*.mp3   (falas aceleradas; com filtro quando a voz pede)
-  src/epNN/manifest.json    (tempo de cada fala e de cada palavra, e eventos finais)
+Lê out/<projeto>/falas (gerado por gerar_falas.py) e escreve:
+  public/<projeto>/falas/*.mp3   (falas aceleradas; com filtro quando a voz pede)
+  src/<projeto>/manifest.json   (tempo de cada fala e de cada palavra, e eventos finais)
 """
 import json, os, subprocess, sys
 
@@ -13,20 +13,25 @@ FPS = 30
 VELOCIDADE = 1.1
 GAP = 0.6  # pausa padrão entre falas, antes da aceleração
 
-# Filtros de voz por personagem.
-FILTROS = {
+# Filtros de voz por personagem, na série O Último Sinal.
+FILTROS_SERIE = {
     "Helena": ["highpass=f=380", "lowpass=f=2900", "acrusher=bits=9:mode=log:aa=1:mix=0.25", "volume=1.4"],
     "Desconhecida": ["lowpass=f=560", "aecho=0.8:0.7:70:0.45", "volume=2.4"],
 }
 
-# Por episódio: quando a primeira fala começa e as pausas maiores antes de
-# certas falas, que dão tempo às ações sem diálogo.
-EPISODIOS = {
-    "01": {"inicio": 0.6, "gaps": {"02": 0.9, "03": 1.0, "05": 0.9, "07": 1.8, "08": 2.2, "10": 1.0,
-                                   "11": 0.7, "15": 1.4, "16": 0.5, "17": 0.5}},
-    "02": {"inicio": 1.9, "gaps": {"02": 0.5, "03": 1.6, "05": 3.6, "06": 0.5, "07": 0.7, "08": 2.8,
-                                   "09": 0.5, "10": 0.5, "11": 0.8, "12": 0.5, "13": 0.7, "14": 2.6,
-                                   "15": 0.8, "17": 10.6}},
+# Por projeto: quando a primeira fala começa, as pausas maiores antes de certas
+# falas (que dão tempo às ações sem diálogo) e o tempo final depois da última.
+PROJETOS = {
+    "ep01": {"inicio": 0.6, "filtros": FILTROS_SERIE,
+             "gaps": {"02": 0.9, "03": 1.0, "05": 0.9, "07": 1.8, "08": 2.2, "10": 1.0,
+                      "11": 0.7, "15": 1.4, "16": 0.5, "17": 0.5}},
+    "ep02": {"inicio": 1.9, "filtros": FILTROS_SERIE, "preto": 0.6, "cauda": 2.8,
+             "gaps": {"02": 0.5, "03": 1.6, "05": 3.6, "06": 0.5, "07": 0.7, "08": 2.8,
+                      "09": 0.5, "10": 0.5, "11": 0.8, "12": 0.5, "13": 0.7, "14": 2.6,
+                      "15": 0.8, "17": 10.6}},
+    "minutos": {"inicio": 0.5, "filtros": {}, "preto": 2.6, "cauda": 4.6,
+                "gaps": {"02": 0.9, "03": 0.8, "04": 1.6, "05": 3.4, "06": 1.1, "07": 1.6,
+                         "08": 3.2, "09": 0.9, "10": 3.0}},
 }
 
 
@@ -66,52 +71,51 @@ def palavras(alinhamento, inicio_clipe):
     return resultado
 
 
-def exportar(entrada, saida, personagem):
-    filtros = [f"atempo={VELOCIDADE}"] + FILTROS.get(personagem, [])
+def exportar(entrada, saida, filtros_voz):
+    filtros = [f"atempo={VELOCIDADE}"] + filtros_voz
     sh(f'ffmpeg -y -v error -i "{entrada}" -af "{",".join(filtros)}" "{saida}"')
 
 
-def nome_arquivo(ep, fala):
+def nome_arquivo(projeto, fala):
     p = fala["p"].lower().replace("í", "i")
-    return f"ep{ep}_{fala['n']}_{p}"
+    return f"{projeto}_{fala['n']}_{p}"
 
 
-def main(ep):
-    cfg = EPISODIOS[ep]
-    falas = json.load(open(f"episodios/ep{ep}_falas.json", encoding="utf-8"))
-    origem = f"out/ep{ep}/falas"
-    os.makedirs(f"public/ep{ep}/falas", exist_ok=True)
+def main(projeto):
+    cfg = PROJETOS[projeto]
+    falas = json.load(open(f"episodios/{projeto}_falas.json", encoding="utf-8"))
+    origem = f"out/{projeto}/falas"
+    os.makedirs(f"public/{projeto}/falas", exist_ok=True)
     clipes, cursor = [], cfg["inicio"]
     for i, f in enumerate(falas):
         if i > 0:
             cursor += cfg["gaps"].get(f["n"], GAP) / VELOCIDADE
-        nome = nome_arquivo(ep, f)
-        destino = f"public/ep{ep}/falas/{nome}.mp3"
-        exportar(os.path.join(origem, nome + ".mp3"), destino, f["p"])
+        nome = nome_arquivo(projeto, f)
+        destino = f"public/{projeto}/falas/{nome}.mp3"
+        exportar(os.path.join(origem, nome + ".mp3"), destino, cfg["filtros"].get(f["p"], []))
         dur = duracao(destino)
         alinh = json.load(open(os.path.join(origem, nome + ".json"), encoding="utf-8"))
         clipes.append({
-            "n": f["n"], "p": f["p"], "arquivo": f"ep{ep}/falas/{nome}.mp3",
+            "n": f["n"], "p": f["p"], "arquivo": f"{projeto}/falas/{nome}.mp3",
             "inicio": round(cursor, 3), "fim": round(cursor + dur, 3),
             "palavras": palavras(alinh, cursor),
         })
         cursor += dur
 
     manifesto = {"fps": FPS, "falas": clipes}
-    if ep == "01":
+    if projeto == "ep01":
         # Três batidas vindas de baixo do piso, depois corte seco para preto.
         b1 = cursor + 0.9
         manifesto["batidas"] = [round(b1, 3), round(b1 + 1.0, 3), round(b1 + 2.5, 3)]
         manifesto["preto"] = round(manifesto["batidas"][2] + 0.7, 3)
         manifesto["duracao"] = round(manifesto["preto"] + 1.8, 3)
     else:
-        # Corte seco para preto logo após a última fala; o tom contínuo segura o final.
-        manifesto["preto"] = round(cursor + 0.6, 3)
-        manifesto["duracao"] = round(manifesto["preto"] + 2.8, 3)
+        manifesto["preto"] = round(cursor + cfg["preto"], 3)
+        manifesto["duracao"] = round(manifesto["preto"] + cfg["cauda"], 3)
 
-    os.makedirs(f"src/ep{ep}", exist_ok=True)
-    json.dump(manifesto, open(f"src/ep{ep}/manifest.json", "w", encoding="utf-8"), ensure_ascii=False, indent=1)
-    print(f"ep{ep} duracao total:", manifesto["duracao"], "s")
+    os.makedirs(f"src/{projeto}", exist_ok=True)
+    json.dump(manifesto, open(f"src/{projeto}/manifest.json", "w", encoding="utf-8"), ensure_ascii=False, indent=1)
+    print(projeto, "duracao total:", manifesto["duracao"], "s")
 
 
 if __name__ == "__main__":

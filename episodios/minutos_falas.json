@@ -1,0 +1,12 @@
+[
+  {"n": "01", "p": "Narrador", "emo": "[warm, intriguing, close]", "t": "Esse menino vendia cinco minutos de vida por apenas um real. Todos achavam que era uma brincadeira… até que um homem decidiu comprar."},
+  {"n": "02", "p": "Narrador", "emo": "[gentle, melancholic]", "t": "Arthur era um senhor que havia perdido a esposa fazia três anos. Não tinha muito dinheiro, mas tinha uma pergunta que nunca conseguira responder."},
+  {"n": "03", "p": "Arthur", "emo": "[tired, hesitant, soft]", "t": "Esses minutos… servem pra quê?"},
+  {"n": "04", "p": "Narrador", "emo": "[quiet, mysterious]", "t": "O menino não respondeu. Apenas pediu que ele fechasse os olhos e pensasse no momento que mais desejava viver outra vez."},
+  {"n": "05", "p": "Narrador", "emo": "[moved, tender, wonder]", "t": "Quando abriu os olhos, Arthur estava exatamente onde queria. Era uma manhã de domingo, três anos antes. E Helena estava viva."},
+  {"n": "06", "p": "Helena", "voz": "HelenaSra", "emo": "[warm, playful, loving]", "t": "Você vai ficar aí parado ou vem tomar café?"},
+  {"n": "07", "p": "Narrador", "emo": "[emotional, restrained, tender]", "t": "Arthur tentou contar tudo o que sentia. Mas descobriu que cinco minutos eram pouco para três anos de saudade. Então fez apenas uma coisa: segurou a mão dela."},
+  {"n": "08", "p": "Narrador", "emo": "[soft, sad]", "t": "Quando voltou, o menino já guardava sua pequena placa. Arthur quis comprar mais cinco minutos. Mas Theo balançou a cabeça."},
+  {"n": "09", "p": "Theo", "emo": "[gentle, quiet, a little sad]", "t": "Cada pessoa só pode comprar uma vez."},
+  {"n": "10", "p": "Narrador", "emo": "[hushed, emotional, slow reveal]", "t": "O que Arthur nunca soube… é que Theo não vendia minutos para ganhar dinheiro. Ele estava juntando moedas para comprar cinco minutos com a própria mãe."}
+]

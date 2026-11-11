@@ -176,7 +176,7 @@ const fx = ({ t, fala, shot }: Contexto) => {
 
 // Mesa que Carlos arrasta para cima do piso; a escotilha a derruba.
 const itens = ({ t, shot, p }: Contexto) => {
-  if (t < MESA.de) return [];
+  if (t < MESA.de || shot.fundo !== "sala") return [];
   const voa = sobe(t, T_ABRE + 0.3, T_ABRE + 1.0);
   if (voa >= 1) return [];
   const x = shot.id === "carlos_mesa" ? 770 - 200 * p : 570 + voa * 520 + Math.sin(t * 60) * tremorPiso(t) * 8;
