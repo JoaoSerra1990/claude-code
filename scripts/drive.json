@@ -1,0 +1,13 @@
+{
+  "_nota": "Destino no Google Drive dos vídeos aprovados. Uploads a partir da sessão têm limite de 10 MB, por isso sobe a cópia gerada por scripts/comprimir_drive.sh.",
+  "pastas": {
+    "ultimo_sinal": {"nome": "Animacoes/História 1 Daniel", "id": "1IRvjYp5h4OIHVtNXUxu9sfYk4Sxf_Ych"},
+    "mare": {"nome": "Animacoes/Maré", "id": "1g6KZ_dNOcF7iw8Lvcb_q9jzCNZ5RL9q7"},
+    "curtas": {"nome": "Animacoes/Curtas", "id": "1b2Guh3uLVTaOblZTbqHEM1XrIyfQ7bFc"}
+  },
+  "projetos": {
+    "ep01": "ultimo_sinal", "ep02": "ultimo_sinal",
+    "mare01": "mare", "mare02": "mare",
+    "minutos": "curtas", "trem": "curtas"
+  }
+}
