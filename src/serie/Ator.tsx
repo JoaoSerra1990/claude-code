@@ -170,7 +170,7 @@ export const Ator = ({
     switch (r.boca) {
       case "tensa": return <path d="M-26 -626 Q0 -640 26 -626" fill="none" stroke={TINTA} strokeWidth={8} strokeLinecap="round" />;
       case "triste": return <path d="M-22 -622 Q0 -642 22 -622" fill="none" stroke={TINTA} strokeWidth={8} strokeLinecap="round" />;
-      case "medo": return <ellipse cx={0} cy={-630} rx={15} ry={9 + Math.sin(t * 23 + fase) * 2} fill="#5a1620" />;
+      case "medo": return <ellipse cx={0} cy={-630} rx={15} ry={9} fill="#5a1620" />;
       case "grito": return <ellipse cx={0} cy={-628} rx={26} ry={24} fill="#5a1620" />;
       case "o": return <ellipse cx={0} cy={-630} rx={13} ry={17} fill="#5a1620" />;
       default: return <line x1={-22} y1={-630} x2={22} y2={-630} stroke={TINTA} strokeWidth={8} strokeLinecap="round" />;

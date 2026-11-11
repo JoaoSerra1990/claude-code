@@ -64,12 +64,15 @@ const T_DANIEL = fim("16") + 0.97 * G;
 const P = BLOCOS.placa;
 
 const SHOTS: Shot[] = [
-  // 1. Gancho: preto, três batidas, a voz sob o piso.
+  // 1. Gancho: preto, três batidas; o alto-falante acende e chama Daniel.
   { id: "preto", de: 0, ate: 1.5, fundo: "preto", cam: [[540, 960, 1], [540, 960, 1]] },
-  { id: "daniel_ouve", de: 1.5, ate: fim("01") + 0.2, fundo: "sala", bloco: "inicio",
-    cam: [[500, 1195, 2.7], [500, 1185, 3.1]] },
+  { id: "falante_chama", de: 1.5, ate: pal("01", "não") - 0.1, fundo: "sala", bloco: "inicio", luz: "ciano", tremor: 3,
+    cam: [[FX, FY, 2.4], [FX, FY, 2.9]] },
+  { id: "daniel_ouve", de: pal("01", "não") - 0.1, ate: fim("01") + 0.2, fundo: "sala", bloco: "inicio", luz: "ciano",
+    cam: [[650, 830, 1.3], [640, 850, 1.45]],
+    at: { Daniel: { expr: "congelado", olhar: [0.7, -1] }, Carlos: { olhar: [-0.6, -1] }, Marina: { olhar: [-0.4, -1] }, Lívia: { olhar: [-0.8, -1] } } },
   { id: "daniel_grita", de: fim("01") + 0.2, ate: fim("02") + 0.3, fundo: "sala", bloco: "inicio", tremor: 4,
-    cam: [[500, 1400, 1.6], [500, 1450, 1.8]], at: { Daniel: { expr: "panico" } } },
+    cam: [[560, 1180, 1.7], [540, 1190, 2.0]], at: { Daniel: { expr: "panico", olhar: [0.7, -1] } } },
 
   // 2. Carlos perde o controle.
   { id: "carlos_mesa", de: fim("02") + 0.3, ate: fim("03") + 0.25, fundo: "sala", bloco: "inicio", tremor: 3,
@@ -158,7 +161,7 @@ const fx = ({ t, fala, shot }: Contexto) => {
   const piso = tremorPiso(t);
   return {
     sala: {
-      falante: fala?.p === "Helena" || shot.id === "falante" || shot.id === "contagem",
+      falante: fala?.p === "Helena" || fala?.p === "Desconhecida" || shot.id === "falante" || shot.id === "falante_chama" || shot.id === "contagem",
       arranha: t >= ZUMBI.de && t < ZUMBI.ate ? sobe(t, ZUMBI.de, ZUMBI.ate - 0.2) : null,
       rachadura: 1,
       batida: piso * 0.5,
@@ -290,7 +293,7 @@ export const Ep02 = () => (
         <Som fps={FPS} em={VIBRA.de} src={`${S2}metal.mp3`} volume={0.9} />
         <Som fps={FPS} em={VIBRA.de + 0.7} src={`${S2}rachadura.mp3`} volume={0.8} />
         <Som fps={FPS} em={ZUMBI.de} src={`${S2}arranhao.mp3`} volume={0.9} />
-        {manifesto.falas.filter((f) => f.p === "Helena").map((f) => (
+        {manifesto.falas.filter((f) => f.p === "Helena" || f.p === "Desconhecida").map((f) => (
           <Som key={f.n} fps={FPS} em={f.inicio - 0.3} src={`${S1}estatica.mp3`} volume={0.35} />
         ))}
         {BIPES.map((b) => <Som key={b} fps={FPS} em={b} src={`${S2}bipe.mp3`} volume={0.8} />)}
