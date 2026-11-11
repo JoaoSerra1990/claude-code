@@ -1,14 +1,14 @@
 {
-  "_nota": "Vozes premade (funcionam no plano Free). Para trocar por vozes em português, troque o voice_id aqui. As vozes 'ULTIMO SINAL - *' já estão na conta, mas exigem plano pago para uso via API.",
+  "_nota": "Um voice_id fixo por personagem em toda a temporada. Personagens usam vozes brasileiras da biblioteca (exigem plano pago). O narrador segue com a voz aprovada no episódio 1.",
   "modelo": "eleven_v3",
   "vozes": {
     "Narrador": "nPczCjzI2devNBz1zQrb",
-    "Carlos": "pqHfZKP75CvOlQylNhV4",
-    "Daniel": "IKne3meq5aSn9XLyUdCD",
-    "Pedro": "TX3LPaxmHKxFdv7VOQHJ",
-    "Rafael": "bIHbv24MWmeRgasZH58o",
-    "Marina": "XrExE9yKIg1WjnnlVkGX",
-    "Lívia": "pFZP5JQG7iQjIQuC4Bku",
-    "Helena": "EXAVITQu4vr4xnSDxMaL"
+    "Carlos": "bEYEuRWlSrSpweXZIhwF",
+    "Daniel": "uSLIsyEZR0zap18vVyEt",
+    "Pedro": "4Nn4X9zUEoY31Hy6uXuU",
+    "Rafael": "Jtjt6eqUHu2hrlrB8oW9",
+    "Marina": "nczLZ6GvJGozyc3FlLte",
+    "Lívia": "n2a9VtkZLl8j1FSXHsL7",
+    "Helena": "dE4UHrF86QhrHso7ckyc"
   }
 }

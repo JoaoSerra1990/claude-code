@@ -9,6 +9,8 @@ import json, os, re, subprocess
 FALAS = json.load(open("episodios/ep01_falas.json", encoding="utf-8"))
 ORIGEM = "out/ep01/falas"
 FPS = 30
+# Ritmo da série: falas, legendas e pausas saem 10% mais rápidas.
+VELOCIDADE = 1.1
 INICIO = 0.6
 GAP = 0.6  # pausa padrão entre falas
 # Pausas maiores antes de certas falas, para dar tempo a ações sem diálogo.
@@ -26,8 +28,8 @@ def duracao(path):
 def palavras(alinhamento, inicio_clipe):
     """Agrupa caracteres em palavras, ignorando marcações [entre colchetes]."""
     chars = alinhamento["characters"]
-    starts = alinhamento["character_start_times_seconds"]
-    ends = alinhamento["character_end_times_seconds"]
+    starts = [x / VELOCIDADE for x in alinhamento["character_start_times_seconds"]]
+    ends = [x / VELOCIDADE for x in alinhamento["character_end_times_seconds"]]
     resultado, atual, dentro_tag = [], None, False
     for c, s, e in zip(chars, starts, ends):
         if c == "[":
@@ -46,23 +48,22 @@ def palavras(alinhamento, inicio_clipe):
     # pontuação final encerra a frase para a legenda quebrar a linha
     return resultado
 
-def efeito_alto_falante(entrada, saida):
-    sh(f'ffmpeg -y -v error -i "{entrada}" -af "highpass=f=380,lowpass=f=2900,'
-       f'acrusher=bits=9:mode=log:aa=1:mix=0.25,volume=1.4" "{saida}"')
+def exportar(entrada, saida, alto_falante):
+    filtros = [f"atempo={VELOCIDADE}"]
+    if alto_falante:
+        filtros += ["highpass=f=380", "lowpass=f=2900", "acrusher=bits=9:mode=log:aa=1:mix=0.25", "volume=1.4"]
+    sh(f'ffmpeg -y -v error -i "{entrada}" -af "{",".join(filtros)}" "{saida}"')
 
 def main():
     clipes, cursor = [], INICIO
     for i, f in enumerate(FALAS):
         if i > 0:
-            cursor += GAPS.get(f["n"], GAP)
+            cursor += GAPS.get(f["n"], GAP) / VELOCIDADE
         nome = f"ep01_{f['n']}_{f['p'].lower().replace('í','i')}"
         origem_mp3 = os.path.join(ORIGEM, nome + ".mp3")
-        dur = duracao(origem_mp3)
         destino = f"public/ep01/falas/{nome}.mp3"
-        if f["p"] == "Helena":
-            efeito_alto_falante(origem_mp3, destino)
-        else:
-            sh(f'cp "{origem_mp3}" "{destino}"')
+        exportar(origem_mp3, destino, f["p"] == "Helena")
+        dur = duracao(destino)
         alinh = json.load(open(os.path.join(ORIGEM, nome + ".json"), encoding="utf-8"))
         clipes.append({
             "n": f["n"], "p": f["p"], "arquivo": f"ep01/falas/{nome}.mp3",
