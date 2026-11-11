@@ -87,9 +87,12 @@ def main():
     def inicio_de(n): return next(c["inicio"] for c in clipes if c["n"] == n)
     def fim_de(n): return next(c["fim"] for c in clipes if c["n"] == n)
     cenas = [
-        {"id": "gancho", "de": 0, "ate": inicio_de("02") - 0.3, "fundo": "sala", "sino": 0.2},
-        {"id": "terceiro_dia", "de": inicio_de("02") - 0.3, "ate": inicio_de("05") - 0.3, "fundo": "patio", "zumbis": True},
-        {"id": "porta", "de": inicio_de("05") - 0.3, "ate": inicio_de("08") - 0.3, "fundo": "sala", "barricada": True},
+        # Ambiente fixo: a sala trancada. Helena fala no escuro, depois o narrador
+        # apresenta o terceiro dia com uma visão aérea do pátio, e a câmera volta à sala.
+        {"id": "gancho", "de": 0, "ate": inicio_de("02") - 0.7, "fundo": "sala", "escuro": True, "sino": 0.2},
+        {"id": "patio_aereo", "de": inicio_de("02") - 0.7, "ate": fim_de("02") + 0.8, "fundo": "patio"},
+        {"id": "sala_dia", "de": fim_de("02") + 0.8, "ate": inicio_de("05") - 0.3, "fundo": "sala"},
+        {"id": "porta", "de": inicio_de("05") - 0.3, "ate": inicio_de("08") - 0.3, "fundo": "sala"},
         {"id": "sinal", "de": inicio_de("08") - 0.3, "ate": inicio_de("11") - 0.3, "fundo": "sala", "relogio": "03:17", "sino": inicio_de("08")},
         {"id": "confronto", "de": inicio_de("11") - 0.3, "ate": inicio_de("15") - 0.3, "fundo": "sala", "confronto": True},
         {"id": "subsolo", "de": inicio_de("15") - 0.3, "ate": total, "fundo": "subsolo", "batidas": [fim_de("17") + 0.8, fim_de("17") + 1.6, fim_de("17") + 2.4]},

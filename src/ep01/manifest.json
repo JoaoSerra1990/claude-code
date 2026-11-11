@@ -790,23 +790,28 @@
   {
    "id": "gancho",
    "de": 0,
-   "ate": 6.686,
+   "ate": 6.286,
    "fundo": "sala",
+   "escuro": true,
    "sino": 0.2
   },
   {
-   "id": "terceiro_dia",
-   "de": 6.686,
+   "id": "patio_aereo",
+   "de": 6.286,
+   "ate": 15.753,
+   "fundo": "patio"
+  },
+  {
+   "id": "sala_dia",
+   "de": 15.753,
    "ate": 22.980999999999998,
-   "fundo": "patio",
-   "zumbis": true
+   "fundo": "sala"
   },
   {
    "id": "porta",
    "de": 22.980999999999998,
    "ate": 34.954,
-   "fundo": "sala",
-   "barricada": true
+   "fundo": "sala"
   },
   {
    "id": "sinal",
