@@ -2,7 +2,6 @@
 
 Lê out/ep01/falas (gerado por gerar_falas.py) e escreve:
   public/ep01/falas/*.mp3   (falas; Helena com efeito de alto-falante)
-  public/ep01/sfx/*.wav     (sino, estática, batidas)
   src/ep01/manifest.json    (tempos de cada fala, palavras e cenas)
 """
 import json, os, re, subprocess
@@ -10,10 +9,11 @@ import json, os, re, subprocess
 FALAS = json.load(open("episodios/ep01_falas.json", encoding="utf-8"))
 ORIGEM = "out/ep01/falas"
 FPS = 30
-INICIO = 0.4
-GAP = 1.1          # pausa padrão entre falas
-GAP_NARRADOR = 1.4 # o narrador respira mais
-CAUDA = 6.0        # tempo final com a cena de suspense
+INICIO = 0.6
+GAP = 0.6  # pausa padrão entre falas
+# Pausas maiores antes de certas falas, para dar tempo a ações sem diálogo.
+GAPS = {"02": 0.9, "03": 1.0, "05": 0.9, "07": 1.8, "08": 2.2, "10": 1.0,
+        "11": 0.7, "15": 1.4, "16": 0.5, "17": 0.5}
 
 def sh(cmd):
     subprocess.run(cmd, shell=True, check=True, capture_output=True)
@@ -50,22 +50,11 @@ def efeito_alto_falante(entrada, saida):
     sh(f'ffmpeg -y -v error -i "{entrada}" -af "highpass=f=380,lowpass=f=2900,'
        f'acrusher=bits=9:mode=log:aa=1:mix=0.25,volume=1.4" "{saida}"')
 
-def sfx():
-    os.makedirs("public/ep01/sfx", exist_ok=True)
-    # sino escolar: dois tons com decaimento
-    sh('ffmpeg -y -v error -f lavfi -i "sine=f=1800:d=2.6" -f lavfi -i "sine=f=2400:d=2.6" '
-       '-filter_complex "[0][1]amix=inputs=2,afade=t=out:st=0.3:d=2.3,volume=0.6" public/ep01/sfx/sino.wav')
-    # estática para o alto-falante
-    sh('ffmpeg -y -v error -f lavfi -i "anoisesrc=d=1.2:c=white:a=0.5" '
-       '-af "highpass=f=800,afade=t=out:st=0.8:d=0.4" public/ep01/sfx/estatica.wav')
-    # batida no piso: tom grave com ataque e queda rápida
-    sh('ffmpeg -y -v error -f lavfi -i "sine=f=85:d=0.5" '
-       '-af "afade=t=out:st=0.05:d=0.45,volume=2.2" public/ep01/sfx/batida.wav')
-
 def main():
-    sfx()
     clipes, cursor = [], INICIO
-    for f in FALAS:
+    for i, f in enumerate(FALAS):
+        if i > 0:
+            cursor += GAPS.get(f["n"], GAP)
         nome = f"ep01_{f['n']}_{f['p'].lower().replace('í','i')}"
         origem_mp3 = os.path.join(ORIGEM, nome + ".mp3")
         dur = duracao(origem_mp3)
@@ -80,30 +69,16 @@ def main():
             "inicio": round(cursor, 3), "fim": round(cursor + dur, 3),
             "palavras": palavras(alinh, cursor),
         })
-        cursor += dur + (GAP_NARRADOR if f["p"] == "Narrador" else GAP)
-    total = cursor - GAP + CAUDA
-
-    # Cenas: intervalos de tempo com fundo e enquadramento próprios.
-    def inicio_de(n): return next(c["inicio"] for c in clipes if c["n"] == n)
-    def fim_de(n): return next(c["fim"] for c in clipes if c["n"] == n)
-    cenas = [
-        # Ambiente fixo: a sala trancada. Helena fala no escuro, depois o narrador
-        # apresenta o terceiro dia com uma visão aérea do pátio, e a câmera volta à sala.
-        {"id": "gancho", "de": 0, "ate": inicio_de("02") - 0.7, "fundo": "sala", "escuro": True, "sino": 0.2},
-        {"id": "patio_aereo", "de": inicio_de("02") - 0.7, "ate": fim_de("02") + 0.8, "fundo": "patio"},
-        {"id": "sala_dia", "de": fim_de("02") + 0.8, "ate": inicio_de("05") - 0.3, "fundo": "sala"},
-        {"id": "porta", "de": inicio_de("05") - 0.3, "ate": inicio_de("08") - 0.3, "fundo": "sala"},
-        {"id": "sinal", "de": inicio_de("08") - 0.3, "ate": inicio_de("11") - 0.3, "fundo": "sala", "relogio": "03:17", "sino": inicio_de("08")},
-        {"id": "confronto", "de": inicio_de("11") - 0.3, "ate": inicio_de("15") - 0.3, "fundo": "sala", "confronto": True},
-        {"id": "subsolo", "de": inicio_de("15") - 0.3, "ate": total, "fundo": "subsolo", "batidas": [fim_de("17") + 0.8, fim_de("17") + 1.6, fim_de("17") + 2.4]},
-    ]
-    manifesto = {"fps": FPS, "duracao": round(total, 3), "falas": clipes, "cenas": cenas,
-                 "estatica": [c["inicio"] for c in clipes if c["p"] == "Helena"]}
+        cursor += dur
+    # Três batidas vindas de baixo do piso, depois corte seco para preto.
+    b1 = cursor + 0.9
+    batidas = [round(b1, 3), round(b1 + 1.0, 3), round(b1 + 2.5, 3)]
+    preto = round(batidas[2] + 0.7, 3)
+    total = round(preto + 1.8, 3)
+    manifesto = {"fps": FPS, "duracao": total, "falas": clipes, "batidas": batidas, "preto": preto}
     os.makedirs("src/ep01", exist_ok=True)
     json.dump(manifesto, open("src/ep01/manifest.json", "w", encoding="utf-8"), ensure_ascii=False, indent=1)
-    print("duracao total:", round(total, 2), "s")
-    for c in clipes:
-        print(c["n"], c["p"], c["inicio"], c["fim"])
+    print("duracao total:", total, "s")
 
 if __name__ == "__main__":
     main()

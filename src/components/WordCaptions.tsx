@@ -16,6 +16,8 @@ type Props = {
   perLine?: number;
   /** Posição vertical, de 0 (topo) a 1 (base). */
   y?: number;
+  /** Tamanho da fonte em pixels. */
+  size?: number;
 };
 
 const outline = (w: number) =>
@@ -24,7 +26,7 @@ const outline = (w: number) =>
     return `${Math.cos(a) * w}px ${Math.sin(a) * w}px 0 ${COLORS.ink}`;
   }).join(", ");
 
-export const WordCaptions = ({ words, perLine = 3, y = 0.6 }: Props) => {
+export const WordCaptions = ({ words, perLine = 3, y = 0.6, size = 104 }: Props) => {
   const frame = useCurrentFrame();
   const { fps, height } = useVideoConfig();
   const t = frame / fps;
@@ -38,10 +40,11 @@ export const WordCaptions = ({ words, perLine = 3, y = 0.6 }: Props) => {
   }
   if (lines[lines.length - 1].length === 0) lines.pop();
 
-  // A linha fica na tela do início da sua primeira palavra até a próxima linha começar.
+  // A linha some pouco depois da última palavra, ou quando a próxima linha começa.
   const index = lines.findIndex((line, i) => {
     const next = lines[i + 1];
-    return t >= line[0].start && (next ? t < next[0].start : t < line[line.length - 1].end + 0.4);
+    const sai = line[line.length - 1].end + 0.45;
+    return t >= line[0].start && t < (next ? Math.min(next[0].start, sai) : sai);
   });
   if (index === -1) return null;
 
@@ -55,7 +58,7 @@ export const WordCaptions = ({ words, perLine = 3, y = 0.6 }: Props) => {
           gap: "0 26px",
           padding: "0 60px",
           fontFamily: FONT,
-          fontSize: 104,
+          fontSize: size,
           lineHeight: 1.1,
           textTransform: "uppercase",
           textShadow: outline(9),
