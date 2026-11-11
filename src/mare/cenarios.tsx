@@ -353,7 +353,8 @@ export const Barco = ({ t }: { t: number }) => {
 // ---------- rua da cidade, subindo para o morro ----------
 export const PLACA_ESCOLA: [number, number] = [800, 980];
 
-export const Cidade = ({ t, onda }: { t: number; onda: number }) => (
+/** `povo`: quantas pessoas correm pela rua em direção à câmera, fugindo da onda. */
+export const Cidade = ({ t, onda, povo = 0 }: { t: number; onda: number; povo?: number }) => (
   <g>
     <defs>
       <linearGradient id="ceuCidade" x1="0" y1="0" x2="0" y2="1">
@@ -398,6 +399,19 @@ export const Cidade = ({ t, onda }: { t: number; onda: number }) => (
         <Ator v={turista(i + 5)} t={t} expr="panico" pose="recuar" andando fase={i} />
       </g>
     ))}
+    {/* multidão descendo a rua na direção da câmera */}
+    {Array.from({ length: povo }, (_, i) => {
+      const q = (t * 0.22 + acaso(i, 91)) % 1;
+      const lado = (acaso(i, 92) - 0.5) * 2;
+      const y = 1330 + q * q * 760;
+      return { i, q, y, x: 540 + lado * (60 + q * 520) };
+    })
+      .sort((a, b) => a.y - b.y)
+      .map(({ i, q, x, y }) => (
+        <g key={`p${i}`} transform={`translate(${x} ${y}) scale(${0.16 + q * q * 0.5})`}>
+          <Ator v={turista(i + 11)} t={t} expr="panico" pose={i % 2 ? "recuar" : "apontarCima"} andando fase={i * 1.7} />
+        </g>
+      ))}
   </g>
 );
 
@@ -448,3 +462,379 @@ export const Escola = ({ t, onda, bia }: { t: number; onda: number; bia: Visual 
     </g>
   );
 };
+
+// ---------- orla: a onda atinge o calçadão ----------
+/** `frente`: avanço da parede de água da direita para a esquerda, de 0 a 1. */
+export const Orla = ({ t, frente }: { t: number; frente: number }) => {
+  const fx = 1350 - frente * 1900;
+  const nivelEm = (x: number) => {
+    if (x < fx) return null;
+    const d = x - fx;
+    return 1010 - Math.max(0, 1 - d / 520) * 640 + Math.sin(t * 3 + x * 0.02) * 10;
+  };
+  const xs = Array.from({ length: 50 }, (_, i) => fx + i * 40).filter((x) => x <= 1140);
+  const crista = xs.map((x) => `${x},${nivelEm(x)}`).join(" ");
+  const lojas = [60, 290, 520, 750];
+  const carros = [
+    { x: 180, c: "#c0392b" }, { x: 540, c: "#2e6f8a" }, { x: 880, c: "#e9c46a" },
+  ];
+  return (
+    <g>
+      <defs>
+        <linearGradient id="ceuOrla" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stopColor="#4b5d6b" />
+          <stop offset="1" stopColor="#9aa9b1" />
+        </linearGradient>
+        <linearGradient id="aguaOrla" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stopColor="#2b6375" />
+          <stop offset="1" stopColor="#123846" />
+        </linearGradient>
+      </defs>
+      <rect width={1080} height={1920} fill="url(#ceuOrla)" />
+      {/* prédios da orla */}
+      {[[0, 260, 300], [280, 180, 260], [520, 300, 240], [740, 220, 340]].map(([x, y, w], i) => (
+        <g key={i}>
+          <rect x={x} y={y} width={w} height={1100} fill={["#d9c9a8", "#c9d6dc", "#e9b9a0", "#d6d0c4"][i]} stroke="#2b211a" strokeWidth={5} />
+          {Array.from({ length: 6 }, (_, r) =>
+            Array.from({ length: 3 }, (_, c) => (
+              <rect key={`${r}${c}`} x={(x as number) + 26 + c * (((w as number) - 40) / 3)} y={(y as number) + 40 + r * 110} width={46} height={62} fill="#5b7f95" stroke="#2b211a" strokeWidth={3} />
+            )),
+          )}
+        </g>
+      ))}
+      {/* vitrines no térreo */}
+      {lojas.map((x, i) => {
+        const quebrada = fx < x + 120;
+        const d = Math.max(0, x + 120 - fx);
+        return (
+          <g key={i}>
+            <rect x={x} y={1000} width={210} height={250} fill="#2b3a46" stroke="#2b211a" strokeWidth={6} />
+            <rect x={x} y={980} width={210} height={34} fill={["#b3402e", "#2a9d8f", "#e9c46a", "#5b8def"][i]} />
+            {!quebrada && <rect x={x + 10} y={1024} width={190} height={216} fill="#9fd0e6" opacity={0.5} />}
+            {quebrada && d < 700 &&
+              Array.from({ length: 8 }, (_, k) => (
+                <path key={k} d="M0 0 L16 4 L6 18Z" fill="#cfeaf5" opacity={Math.max(0, 1 - d / 700)}
+                  transform={`translate(${x + 30 + k * 22 - d * (0.3 + acaso(k + i, 3) * 0.4)} ${1040 + acaso(k, i + 2) * 160 - d * 0.15}) rotate(${d * (2 + k)})`} />
+              ))}
+          </g>
+        );
+      })}
+      {/* calçada, avenida e calçadão */}
+      <rect x={0} y={1250} width={1080} height={80} fill="#b9b3a6" />
+      <rect x={0} y={1330} width={1080} height={330} fill="#4f545b" />
+      {Array.from({ length: 8 }, (_, i) => <rect key={i} x={i * 150 + 30} y={1488} width={80} height={12} fill="#e9dcc0" />)}
+      <rect x={0} y={1660} width={1080} height={260} fill="#ece4d2" />
+      {Array.from({ length: 12 }, (_, i) => (
+        <path key={i} d={`M${i * 100 - 50} 1700 q25 -24 50 0 t50 0`} stroke="#2b2b2b" strokeWidth={10} fill="none" opacity={0.5} />
+      ))}
+      {Array.from({ length: 12 }, (_, i) => (
+        <path key={`b${i}`} d={`M${i * 100 - 50} 1790 q25 -24 50 0 t50 0`} stroke="#2b2b2b" strokeWidth={10} fill="none" opacity={0.5} />
+      ))}
+      {/* coqueiros */}
+      {[150, 620, 1000].map((x, i) => {
+        const dobra = x > fx ? Math.min(28, (x - fx) * 0.05) : 0;
+        return (
+          <g key={i} transform={`rotate(${-dobra} ${x} 1800)`}>
+            <path d={`M${x} 1800 Q${x + 20} 1500 ${x - 10} 1240`} stroke="#6b4a30" strokeWidth={22} fill="none" />
+            {[0, 1, 2, 3, 4].map((k) => (
+              <path key={k} d={`M${x - 10} 1240 q${-140 + k * 70} -60 ${-180 + k * 90} ${30 + Math.abs(k - 2) * 20}`} stroke="#3f7350" strokeWidth={20} fill="none" strokeLinecap="round" />
+            ))}
+          </g>
+        );
+      })}
+      {/* carros arrastados */}
+      {carros.map(({ x, c }, i) => {
+        const d = Math.max(0, x + 140 - fx);
+        const leva = Math.min(1, d / 700);
+        const cx = x - d * 0.55, cy = 1560 - leva * 560 + Math.sin(t * 4 + i) * 10 * leva;
+        return (
+          <g key={i} transform={`translate(${cx} ${cy}) rotate(${leva * (150 + i * 30)})`}>
+            <path d="M-140 30 Q-140 -30 -90 -40 L-60 -90 L70 -90 L110 -40 Q150 -30 150 30Z" fill={c} stroke="#2b211a" strokeWidth={6} />
+            <path d="M-50 -80 L60 -80 L90 -42 L-75 -42Z" fill="#9fd0e6" />
+            <circle cx={-80} cy={34} r={28} fill="#1c1c1c" /><circle cx={90} cy={34} r={28} fill="#1c1c1c" />
+          </g>
+        );
+      })}
+      {/* a água */}
+      {xs.length > 1 && (
+        <g>
+          <polygon points={`${fx},1920 ${crista} 1140,1920`} fill="url(#aguaOrla)" opacity={0.96} />
+          {xs.map((x, i) => (
+            <line key={i} x1={x} y1={(nivelEm(x) ?? 1000) + 60 + (i % 3) * 120} x2={x - 60 - ((t * 300 + i * 40) % 80)} y2={(nivelEm(x) ?? 1000) + 70 + (i % 3) * 120} stroke="#cfe7ef" strokeWidth={5} opacity={0.35} />
+          ))}
+          <polyline points={crista} fill="none" stroke="#eef8fb" strokeWidth={22} strokeLinejoin="round" />
+          {Array.from({ length: 30 }, (_, i) => {
+            const x = fx + acaso(i, 7) * 260;
+            const y = (nivelEm(Math.max(fx, x)) ?? 400) - 20 - ((t * 200 + i * 40) % 160);
+            return <circle key={i} cx={x} cy={y} r={6 + (i % 4) * 4} fill="#eef8fb" opacity={0.75} />;
+          })}
+          {/* destroços boiando */}
+          {Array.from({ length: 9 }, (_, i) => {
+            const x = 1100 - ((t * 140 + i * 160) % 1400);
+            if (x < fx + 40) return null;
+            return <rect key={`d${i}`} x={x} y={(nivelEm(x) ?? 1000) + 30 + (i % 3) * 90} width={90 + (i % 3) * 40} height={18} rx={4} fill="#6b4a30" transform={`rotate(${Math.sin(t + i) * 20} ${x} 1100)`} />;
+          })}
+        </g>
+      )}
+    </g>
+  );
+};
+
+// ---------- entrada do prédio comercial ----------
+export const PORTA_PREDIO: [number, number] = [540, 1300];
+
+type EntradaProps = {
+  t: number;
+  /** Nível da água na rua, de 0 a 1 (1 = tornozelos). */
+  agua: number;
+  /** Abertura da porta de vidro, de 0 a 1. */
+  porta: number;
+  /** Força com que a porta emperrada chacoalha, de 0 a 1. */
+  chacoalha: number;
+  /** Água invadindo o saguão, de 0 a 1. */
+  invade: number;
+};
+
+export const Entrada = ({ t, agua, porta, chacoalha, invade }: EntradaProps) => {
+  const sacode = Math.sin(t * 70) * 8 * chacoalha;
+  return (
+    <g>
+      <rect width={1080} height={1920} fill="#5f6b73" />
+      {/* fachada */}
+      <rect x={0} y={0} width={1080} height={1760} fill="#c9c3b6" />
+      {Array.from({ length: 5 }, (_, r) =>
+        Array.from({ length: 4 }, (_, c) => (
+          <rect key={`${r}${c}`} x={70 + c * 250} y={60 + r * 170} width={180} height={120} fill="#4f6b7d" stroke="#2b211a" strokeWidth={5} />
+        )),
+      )}
+      <rect x={300} y={880} width={480} height={70} rx={6} fill="#2b3a46" />
+      <text x={540} y={928} textAnchor="middle" fontFamily={FONT} fontSize={40} fill="#d8dde2" letterSpacing={4}>EDIFÍCIO ATLÂNTICO</text>
+      <rect x={340} y={980} width={400} height={20} fill="#2b211a" />
+      {/* saguão visto pelo vidro */}
+      <rect x={350} y={1000} width={380} height={760} fill="#1c2329" />
+      <rect x={360} y={1720 - invade * 380} width={360} height={invade * 380 + 40} fill="#2b6375" opacity={0.9} />
+      <rect x={560} y={1090} width={120} height={60} rx={6} fill="#1f8a4c" />
+      <path d="M590 1135 l14 -30 l10 12 l14 -6 M604 1105 a6 6 0 1 0 0.1 0" stroke="#fff" strokeWidth={5} fill="none" />
+      <path d="M580 1400 l40 -40 l40 0 l0 -40 l40 0" stroke="#3b4652" strokeWidth={10} fill="none" />
+      {/* porta dupla de vidro */}
+      <g transform={`translate(${sacode} 0)`}>
+        <g transform={`translate(360 0) scale(${1 - porta * 0.82} 1) translate(-360 0)`}>
+          <rect x={360} y={1010} width={180} height={750} fill="#9fd0e6" opacity={0.35} stroke="#3b4652" strokeWidth={10} />
+          <rect x={510} y={1340} width={14} height={120} rx={6} fill="#c9ccd2" />
+        </g>
+        <rect x={540} y={1010} width={180} height={750} fill="#9fd0e6" opacity={0.35} stroke="#3b4652" strokeWidth={10} />
+        <rect x={556} y={1340} width={14} height={120} rx={6} fill="#c9ccd2" />
+        <path d="M600 1060 l60 120 M630 1050 l40 80" stroke="#fff" strokeWidth={6} opacity={0.3} />
+      </g>
+      {/* calçada */}
+      <rect x={0} y={1760} width={1080} height={160} fill="#8a8579" />
+    </g>
+  );
+};
+
+/** Lâmina de água corrente à frente dos personagens. */
+export const AguaRua = ({ t, agua }: { t: number; agua: number }) => {
+  if (agua <= 0) return null;
+  const topo = 1920 - agua * 210;
+  const pts = Array.from({ length: 29 }, (_, i) => `${i * 40},${topo + Math.sin(t * 6 + i * 0.7) * 8}`).join(" ");
+  return (
+    <g>
+      <polygon points={`0,1920 ${pts} 1120,1920`} fill="#2b6375" opacity={0.86} />
+      <polyline points={pts} fill="none" stroke="#e8f6fa" strokeWidth={6} opacity={0.7} />
+      {Array.from({ length: 14 }, (_, i) => (
+        <line key={i} x1={1080 - ((t * 420 + i * 90) % 1200)} y1={topo + 40 + (i % 4) * 40} x2={1080 - ((t * 420 + i * 90) % 1200) - 70} y2={topo + 42 + (i % 4) * 40} stroke="#e8f6fa" strokeWidth={4} opacity={0.5} />
+      ))}
+    </g>
+  );
+};
+
+// ---------- escadaria escura ----------
+/** Patamares: térreo, 1º, 2º e 3º andar (x inicial, x final, y). */
+export const LANCES: [number, number, number, number][] = [
+  [120, 1800, 900, 1380],
+  [900, 1380, 180, 960],
+  [180, 960, 900, 540],
+];
+
+export const Escada = ({ t, agua, luz }: { t: number; agua: number; luz: number }) => {
+  const topo = 1920 - agua * 640;
+  const pisca = luz * (0.75 + 0.25 * Math.sin(t * 29) * Math.sin(t * 7.7));
+  return (
+    <g>
+      <rect width={1080} height={1920} fill="#2a2f36" />
+      {Array.from({ length: 24 }, (_, i) => <line key={i} x1={0} x2={1080} y1={i * 84} y2={i * 84} stroke="#30363e" strokeWidth={3} />)}
+      {/* números dos andares pintados na parede */}
+      {[["1", 990, 1250], ["2", 90, 830], ["3", 990, 410]].map(([n, x, y]) => (
+        <text key={n} x={x} y={y} textAnchor="middle" fontFamily={FONT} fontSize={110} fill="#c9a23a" opacity={0.75}>{n}</text>
+      ))}
+      {/* lances e patamares */}
+      {LANCES.map(([x1, y1, x2, y2], i) => {
+        const n = 11;
+        return (
+          <g key={i}>
+            <polygon points={`${x1},${y1} ${x2},${y2} ${x2},${y2 + 70} ${x1},${y1 + 70}`} fill="#4a4f57" />
+            {Array.from({ length: n }, (_, k) => {
+              const xa = x1 + ((x2 - x1) * k) / n, ya = y1 + ((y2 - y1) * k) / n;
+              return <line key={k} x1={xa} y1={ya} x2={xa} y2={ya + 70} stroke="#3a3e45" strokeWidth={5} />;
+            })}
+            <line x1={x1} y1={y1 - 150} x2={x2} y2={y2 - 150} stroke="#8a8f99" strokeWidth={8} />
+            {[0, 0.5, 1].map((k) => (
+              <line key={k} x1={x1 + (x2 - x1) * k} y1={y1 + (y2 - y1) * k - 150} x2={x1 + (x2 - x1) * k} y2={y1 + (y2 - y1) * k} stroke="#6f747d" strokeWidth={5} />
+            ))}
+          </g>
+        );
+      })}
+      {[[0, 1800, 260], [820, 1380, 260], [0, 960, 260], [820, 540, 260]].map(([x, y, w], i) => (
+        <rect key={i} x={x} y={y} width={w} height={70} fill="#55595f" />
+      ))}
+      {/* luz de emergência e lâmpadas */}
+      {[[1010, 1180], [70, 760], [1010, 340]].map(([x, y], i) => (
+        <g key={i}>
+          <rect x={x - 30} y={y} width={60} height={26} rx={6} fill="#3b1a1a" />
+          <circle cx={x} cy={y + 13} r={10} fill="#ff4a3a" opacity={Math.sin(t * 6 + i) > 0 ? 1 : 0.2} />
+        </g>
+      ))}
+      {/* a água subindo */}
+      <rect x={0} y={topo} width={1080} height={1920 - topo} fill="#1f5566" opacity={0.92} />
+      <polyline points={Array.from({ length: 29 }, (_, i) => `${i * 40},${topo + Math.sin(t * 4 + i) * 7}`).join(" ")} fill="none" stroke="#cfe7ef" strokeWidth={6} opacity={0.6} />
+      {Array.from({ length: 6 }, (_, i) => (
+        <rect key={i} x={(i * 190 + t * 40) % 1100 - 40} y={topo + 6 + (i % 2) * 8} width={70} height={14} rx={4} fill="#6b4a30" />
+      ))}
+      <rect width={1080} height={1920} fill="#000" opacity={1 - pisca * 0.85} />
+    </g>
+  );
+};
+
+// ---------- a cidade alagada vista do terceiro andar ----------
+export const ESCOLA_LONGE: [number, number] = [430, 880];
+export const JANELA_SILHUETA: [number, number] = [404, 838];
+
+type SubmersaProps = {
+  t: number;
+  /** Onda de água e destroços indo até a escola, de 0 a 1 (1 = impacto). */
+  onda: number;
+  /** Silhueta na janela do segundo andar, de 0 a 1. */
+  silhueta: number;
+  /** Desenha a moldura da janela do escritório em primeiro plano. */
+  moldura?: boolean;
+  /** Abertura do vidro da janela, de 0 a 1. */
+  abre?: number;
+};
+
+export const Submersa = ({ t, onda, silhueta, moldura = false, abre = 1 }: SubmersaProps) => {
+  const [ex, ey] = ESCOLA_LONGE;
+  const agua = 990;
+  const frenteX = 1250 - onda * (1250 - (ex + 150));
+  const impacto = Math.max(0, onda - 0.9) * 10;
+  return (
+    <g>
+      <defs>
+        <linearGradient id="ceuSub" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stopColor="#56676f" />
+          <stop offset="1" stopColor="#a7b3b6" />
+        </linearGradient>
+        <linearGradient id="aguaSub" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stopColor="#5b7c84" />
+          <stop offset="1" stopColor="#2b4e5a" />
+        </linearGradient>
+      </defs>
+      <rect width={1080} height={1920} fill="url(#ceuSub)" />
+      <path d="M0 760 Q260 620 520 700 Q780 600 1080 680 L1080 1000 L0 1000Z" fill="#53735c" />
+      {/* prédios e telhados isolados */}
+      {[[40, 700, 150], [700, 640, 170], [880, 760, 140], [210, 820, 90]].map(([x, y, w], i) => (
+        <g key={i}>
+          <rect x={x} y={y} width={w} height={agua - (y as number) + 10} fill={["#d6d0c4", "#c9d6dc", "#e9b9a0", "#f1d9b0"][i]} stroke="#2b211a" strokeWidth={4} />
+          {[0, 1].map((r) => <rect key={r} x={(x as number) + 20} y={(y as number) + 30 + r * 70} width={(w as number) - 40} height={30} fill="#4f6b7d" />)}
+        </g>
+      ))}
+      {/* a escola, ao longe */}
+      <rect x={ex - 130} y={ey - 120} width={300} height={agua - ey + 130} fill="#f0d98a" stroke="#2b211a" strokeWidth={5} />
+      <path d={`M${ex - 146} ${ey - 120} L${ex + 20} ${ey - 190} L${ex + 186} ${ey - 120}Z`} fill="#b3402e" stroke="#2b211a" strokeWidth={5} />
+      <rect x={ex - 80} y={ey - 108} width={200} height={34} fill="#1f6f4a" />
+      <text x={ex + 20} y={ey - 82} textAnchor="middle" fontFamily={FONT} fontSize={20} fill="#f2ede2">ESCOLA MUNICIPAL</text>
+      {[0, 1, 2, 3].map((k) => (
+        <rect key={k} x={ex - 110 + k * 70} y={ey - 62} width={44} height={60} fill="#2f4656" stroke="#2b211a" strokeWidth={4} />
+      ))}
+      {silhueta > 0 && (
+        <g opacity={silhueta}>
+          <circle cx={JANELA_SILHUETA[0]} cy={JANELA_SILHUETA[1] - 6} r={9} fill="#0a0c10" />
+          <rect x={JANELA_SILHUETA[0] - 10} y={JANELA_SILHUETA[1] + 2} width={20} height={26} rx={7} fill="#0a0c10" />
+        </g>
+      )}
+      {[0, 1, 2, 3].map((k) => (
+        <rect key={`t${k}`} x={ex - 110 + k * 70} y={ey + 30} width={44} height={60} fill="#3c5566" stroke="#2b211a" strokeWidth={4} />
+      ))}
+      {/* a água */}
+      <rect x={0} y={agua} width={1080} height={1920 - agua} fill="url(#aguaSub)" />
+      {Array.from({ length: 26 }, (_, i) => (
+        <line key={i} x1={(i * 97 - t * 50) % 1180 + 1080 * (((i * 97 - t * 50) % 1180) < 0 ? 1 : 0)} y1={agua + 40 + (i % 9) * 100}
+          x2={(i * 97 - t * 50) % 1180 + 1080 * (((i * 97 - t * 50) % 1180) < 0 ? 1 : 0) + 80} y2={agua + 40 + (i % 9) * 100} stroke="#cfe0e4" strokeWidth={4} opacity={0.3} />
+      ))}
+      {/* telhados que restaram, mais perto */}
+      {[[60, 1260, 260], [700, 1180, 300], [380, 1560, 240]].map(([x, y, w], i) => (
+        <path key={i} d={`M${x} ${y} L${(x as number) + (w as number) / 2} ${(y as number) - 110} L${(x as number) + (w as number)} ${y}Z`} fill="#b3402e" stroke="#2b211a" strokeWidth={6} />
+      ))}
+      {/* objetos boiando */}
+      {Array.from({ length: 12 }, (_, i) => {
+        const x = ((i * 173 + t * (18 + (i % 3) * 8)) % 1180) - 60;
+        const y = agua + 140 + acaso(i, 41) * 760;
+        const tipo = i % 4;
+        return (
+          <g key={i} transform={`translate(${x} ${y + Math.sin(t * 2 + i) * 6}) rotate(${Math.sin(t + i) * 12})`}>
+            {tipo === 0 && <rect x={-60} y={-12} width={120} height={24} rx={4} fill="#6b4a30" />}
+            {tipo === 1 && <circle r={26} fill="#1c1c1c" stroke="#3b3b3b" strokeWidth={10} />}
+            {tipo === 2 && <path d="M-70 10 Q-70 -24 -30 -28 L30 -28 Q70 -24 70 10Z" fill="#2e6f8a" stroke="#2b211a" strokeWidth={5} />}
+            {tipo === 3 && <circle r={18} fill="#e76f51" stroke="#fff" strokeWidth={5} />}
+          </g>
+        );
+      })}
+      {/* onda de destroços indo até a escola */}
+      {onda > 0 && onda < 1.05 && (
+        <g>
+          <path d={`M${frenteX} ${agua + 4} Q${frenteX + 40} ${agua - 70} ${frenteX + 120} ${agua - 50} L${frenteX + 600} ${agua - 10} L${frenteX + 600} ${agua + 60} L${frenteX} ${agua + 60}Z`} fill="#3d6873" />
+          <path d={`M${frenteX} ${agua + 4} Q${frenteX + 40} ${agua - 70} ${frenteX + 120} ${agua - 50}`} stroke="#eef8fb" strokeWidth={12} fill="none" />
+          {Array.from({ length: 7 }, (_, i) => (
+            <rect key={i} x={frenteX + 30 + i * 60} y={agua - 40 - (i % 3) * 14} width={50} height={10} rx={3} fill="#6b4a30" transform={`rotate(${i * 30 + t * 90} ${frenteX + 55 + i * 60} ${agua - 35})`} />
+          ))}
+        </g>
+      )}
+      {impacto > 0 &&
+        Array.from({ length: 22 }, (_, i) => (
+          <circle key={i} cx={ex + 150 - acaso(i, 51) * 60} cy={agua - impacto * (30 + acaso(i, 52) * 150)} r={6 + (i % 4) * 4} fill="#eef8fb" opacity={Math.max(0, 1 - impacto * 0.5)} />
+        ))}
+      {/* moldura da janela, em primeiro plano */}
+      {moldura && (
+        <g>
+          <path d="M0 0 H1080 V1920 H0Z M120 260 V1500 H960 V260Z" fill="#30363e" fillRule="evenodd" />
+          <rect x={110} y={250} width={860} height={1260} fill="none" stroke="#1c2026" strokeWidth={22} />
+          <rect x={120 + abre * 840} y={260} width={420} height={1240} fill="#9fb6c8" opacity={0.35} />
+          <rect x={540 + abre * 420} y={260} width={420} height={1240} fill="#9fb6c8" opacity={0.35} />
+          <line x1={540 + abre * 420} y1={260} x2={540 + abre * 420} y2={1500} stroke="#1c2026" strokeWidth={14} />
+          <rect x={90} y={1500} width={900} height={40} fill="#4a4f57" />
+        </g>
+      )}
+    </g>
+  );
+};
+
+/** Escritório no terceiro andar, com a janela aberta para a cidade alagada. */
+export const Escritorio = ({ t, onda, silhueta }: { t: number; onda: number; silhueta: number }) => (
+  <g>
+    <rect width={1080} height={1920} fill="#2f3439" />
+    <clipPath id="janelaEsc"><rect x={140} y={220} width={800} height={860} /></clipPath>
+    <g clipPath="url(#janelaEsc)">
+      <g transform="translate(140 -150) scale(0.74)"><Submersa t={t} onda={onda} silhueta={silhueta} /></g>
+    </g>
+    <rect x={130} y={210} width={820} height={880} fill="none" stroke="#1c2026" strokeWidth={22} />
+    <rect x={110} y={1080} width={860} height={36} fill="#4a4f57" />
+    <rect x={0} y={1300} width={1080} height={620} fill="#3b3f45" />
+    {Array.from({ length: 6 }, (_, i) => <line key={i} x1={0} x2={1080} y1={1340 + i * 100} y2={1340 + i * 100} stroke="#33373c" strokeWidth={4} />)}
+    <rect x={20} y={1180} width={150} height={260} fill="#4a4f57" stroke="#1c2026" strokeWidth={6} />
+    <rect x={40} y={1220} width={110} height={60} fill="#3b3f45" />
+    <rect x={40} y={1300} width={110} height={60} fill="#3b3f45" />
+    <rect x={900} y={1240} width={180} height={26} fill="#5a4c40" />
+    <rect x={930} y={1266} width={14} height={140} fill="#3b3229" />
+    <path d="M960 1240 l40 -90 l60 30 l-30 60Z" fill="#d9d4c4" opacity={0.8} />
+    <rect x={260} y={1700} width={80} height={56} fill="#d9d4c4" transform="rotate(-14 300 1728)" opacity={0.6} />
+  </g>
+);

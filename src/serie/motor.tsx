@@ -25,7 +25,7 @@ export const VISUAL: Record<Nome, Visual> = {
 export type Est = {
   x: number; y: number; s: number;
   expr: Expr; pose: PoseA; olhar: [number, number];
-  xPara?: number; yPara?: number; tremor?: boolean; oculto?: boolean;
+  xPara?: number; yPara?: number; sPara?: number; tremor?: boolean; oculto?: boolean;
   /** Olhos fechados, lágrima no rosto e cabeça balançando em negativa. */
   fechado?: boolean; lagrima?: boolean; nega?: boolean;
 };
@@ -182,12 +182,13 @@ export const Episodio = ({
         const e = { ...bloco[nome], ...(shot.at?.[nome] ?? {}) };
         const x = e.xPara !== undefined ? lerp(e.x, e.xPara) : e.x;
         const y = e.yPara !== undefined ? lerp(e.y, e.yPara) : e.y;
+        const escala = e.sPara !== undefined ? lerp(e.s, e.sPara) : e.s;
         const andando = (e.xPara !== undefined || e.yPara !== undefined) && p > 0.02 && p < 0.98;
         const i = nomes.indexOf(nome);
         return {
           y,
           el: (
-            <g key={nome} transform={`translate(${x} ${y}) scale(${e.s})`}>
+            <g key={nome} transform={`translate(${x} ${y}) scale(${escala})`}>
               <ellipse cx={0} cy={0} rx={120} ry={22} fill="#000" opacity={0.35} />
               <Ator v={elenco[nome]} t={t} expr={e.expr} pose={e.pose} olhar={e.olhar}
                 falando={fala?.p === nome && falando} andando={andando} tremor={e.tremor}

@@ -5,6 +5,7 @@ import { Ep02, EP02_DURACAO, EP02_FPS } from "./ep02/Ep02";
 import { Minutos, MINUTOS_DURACAO, MINUTOS_FPS } from "./minutos/Minutos";
 import { Mare01, MARE01_DURACAO, MARE01_FPS } from "./mare01/Mare01";
 import { Trem, TREM_DURACAO, TREM_FPS } from "./trem/Trem";
+import { Mare02, MARE02_DURACAO, MARE02_FPS } from "./mare02/Mare02";
 import { VIDEO } from "./theme";
 
 export const Root = () => (
@@ -46,6 +47,14 @@ export const Root = () => (
       component={Trem}
       durationInFrames={TREM_DURACAO}
       fps={TREM_FPS}
+      width={VIDEO.width}
+      height={VIDEO.height}
+    />
+    <Composition
+      id="Mare02"
+      component={Mare02}
+      durationInFrames={MARE02_DURACAO}
+      fps={MARE02_FPS}
       width={VIDEO.width}
       height={VIDEO.height}
     />
