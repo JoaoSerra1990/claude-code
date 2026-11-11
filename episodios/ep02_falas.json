@@ -1,0 +1,19 @@
+[
+  {"n": "01", "p": "Desconhecida", "emo": "[whispers, weak, pleading]", "t": "Daniel... não deixa eles abrirem."},
+  {"n": "02", "p": "Daniel", "emo": "[scared, shouting]", "t": "Quem tá aí embaixo?!"},
+  {"n": "03", "p": "Carlos", "emo": "[panicked, shouting]", "t": "Ninguém chega perto desse chão!"},
+  {"n": "04", "p": "Marina", "emo": "[suspicious, sharp]", "t": "O senhor sabe o que tem aí?"},
+  {"n": "05", "p": "Rafael", "emo": "[uneasy, quiet]", "t": "Isso não é parte da escola..."},
+  {"n": "06", "p": "Pedro", "emo": "[nervous]", "t": "Então o que é?"},
+  {"n": "07", "p": "Carlos", "emo": "[grim, low, haunted]", "t": "É uma coisa que devia continuar enterrada."},
+  {"n": "08", "p": "Helena", "emo": "[cold, calm]", "t": "Carlos... você tem trinta segundos."},
+  {"n": "09", "p": "Carlos", "emo": "[desperate, pleading]", "t": "Helena, por favor! Eles são crianças!"},
+  {"n": "10", "p": "Marina", "emo": "[accusing, angry]", "t": "Então você conhece ela!"},
+  {"n": "11", "p": "Carlos", "emo": "[urgent, intense, low]", "t": "Daniel, escuta. Não importa o que você ouvir, não abra aquela passagem."},
+  {"n": "12", "p": "Daniel", "emo": "[frustrated, shouting, scared]", "t": "Por que todo mundo sabe meu nome?!"},
+  {"n": "13", "p": "Helena", "emo": "[cold, soft, ominous]", "t": "Porque você é o motivo de ainda estarmos vivos."},
+  {"n": "14", "p": "Helena", "emo": "[cold, flat]", "t": "Dez segundos."},
+  {"n": "15", "p": "Pedro", "emo": "[terrified]", "t": "Professor... o chão tá mexendo!"},
+  {"n": "16", "p": "Carlos", "emo": "[shouting, commanding, panicked]", "t": "Todo mundo pra trás! AGORA!"},
+  {"n": "17", "p": "Daniel", "emo": "[shocked, quiet, trembling voice]", "t": "Professor... como assim a gente morreu?"}
+]

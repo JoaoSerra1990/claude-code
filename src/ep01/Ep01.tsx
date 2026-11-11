@@ -1,45 +1,20 @@
-import { AbsoluteFill, Audio, Easing, Sequence, interpolate, staticFile, useCurrentFrame } from "remotion";
-import manifesto from "./manifest.json";
-import { WordCaptions, type Word } from "../components/WordCaptions";
+import { AbsoluteFill, interpolate } from "remotion";
+import manifestoJson from "./manifest.json";
 import { COLORS, FONT } from "../theme";
-import { Ator, type Expr, type PoseA, type Visual } from "./Ator";
-import { Fachada, FALANTE, JANELA_ACESA, MUNDO_ALTURA, Patio, RELOGIO, Sala, VIDRO_PORTA } from "./cenarios";
+import { FALANTE, JANELA_ACESA, RELOGIO, VIDRO_PORTA } from "../serie/cenarios";
+import {
+  Episodio, Som, decai, est as e, rosto, tempos,
+  type Bloco, type Contexto, type Manifesto, type Shot,
+} from "../serie/motor";
 
+const manifesto = manifestoJson as Manifesto;
 const FPS = manifesto.fps;
 const falas = manifesto.falas;
-const [B1, B2, B3] = manifesto.batidas;
-const PRETO = manifesto.preto;
-
-type Nome = "Daniel" | "Marina" | "Pedro" | "Lívia" | "Rafael" | "Carlos";
-const NOMES: Nome[] = ["Daniel", "Marina", "Pedro", "Lívia", "Rafael", "Carlos"];
-
-const VISUAL: Record<Nome, Visual> = {
-  Daniel: { pele: "#e9b48a", cabelo: "#2e211b", roupa: "#b9532a", detalhe: "#e8e4dc", calca: "#2a3147", estilo: "curto" },
-  Marina: { pele: "#d9a074", cabelo: "#17110e", roupa: "#6a3fa3", calca: "#22252e", estilo: "rabo", oculos: true },
-  Pedro: { pele: "#f0c19b", cabelo: "#6e4426", roupa: "#2f8a58", detalhe: "#d8d36a", calca: "#3a3f4d", estilo: "cacheado" },
-  Lívia: { pele: "#f1cbb0", cabelo: "#4d2d1c", roupa: "#b85a7c", calca: "#2b2f3b", estilo: "longo" },
-  Rafael: { pele: "#c99670", cabelo: "#1d3f73", roupa: "#2b63ad", detalhe: "#2a70c9", calca: "#30343f", estilo: "gorro" },
-  Carlos: { pele: "#e2b08a", cabelo: "#9a9da4", roupa: "#cfd5de", calca: "#3b3f4a", estilo: "grisalho", oculos: true, gravata: true, barba: true },
-};
-
-// ---------- tempos das falas ----------
-const F = Object.fromEntries(falas.map((f) => [f.n, f]));
-const ini = (n: string) => F[n].inicio;
-const fim = (n: string) => F[n].fim;
-/** Momento em que começa a primeira palavra da fala `n` que inicia com `prefixo`. */
-const pal = (n: string, prefixo: string) =>
-  F[n].palavras.find((w) => w.text.toLowerCase().startsWith(prefixo))?.start ?? ini(n);
+const [B1, B2, B3] = manifestoJson.batidas;
+const PRETO = manifestoJson.preto;
+const { ini, fim, pal } = tempos(manifesto);
 
 // ---------- marcação de cena ----------
-type Est = {
-  x: number; y: number; s: number;
-  expr: Expr; pose: PoseA; olhar: [number, number];
-  xPara?: number; yPara?: number; tremor?: boolean; oculto?: boolean;
-};
-type Bloco = Record<Nome, Est>;
-const e = (x: number, y: number, s: number, expr: Expr = "medo", olhar: [number, number] = [0, 0], pose: PoseA = "parado"): Est =>
-  ({ x, y, s, expr, pose, olhar });
-
 const BLOCOS: Record<string, Bloco> = {
   // Abertura: Carlos em cima da carteira, tentando arrancar o alto-falante.
   abertura: {
@@ -84,20 +59,9 @@ const BLOCOS: Record<string, Bloco> = {
   },
 };
 
-type Cam = [number, number, number]; // centro x, centro y, zoom
-type Luz = "normal" | "vermelha" | "ciano" | "pisca" | "noite";
-type Shot = {
-  id: string; de: number; ate: number;
-  fundo: "sala" | "patio" | "fachada";
-  cam: [Cam, Cam];
-  luz?: Luz; tremor?: number; bloco?: keyof typeof BLOCOS; mesa?: boolean;
-  at?: Partial<Record<Nome, Partial<Est>>>;
-};
-
 const T1 = pal("01", "ele");
 const A1 = ini("01") + (T1 - ini("01")) * 0.55;
 const [FX, FY] = FALANTE;
-const rosto = (b: Bloco, n: Nome): [number, number] => [b[n].x, b[n].y - 690 * b[n].s];
 const S = BLOCOS.sinal, C = BLOCOS.cerco;
 
 const SHOTS: Shot[] = [
@@ -175,155 +139,75 @@ const SHOTS: Shot[] = [
   { id: "batidas", de: B1 - 0.15, ate: B2 + 0.3, fundo: "sala", bloco: "cerco", tremor: 3,
     cam: [[560, 1780, 2.0], [560, 1770, 2.15]],
     at: { Daniel: { xPara: 470, expr: "panico", pose: "recuar", olhar: [0.4, 1] }, Marina: { xPara: 830, expr: "panico", pose: "recuar", olhar: [-0.6, 1] }, Carlos: { expr: "congelado", pose: "parado" } } },
-  { id: "atravessa_piso", de: B2 + 0.3, ate: B3 - 0.2, fundo: "sala", bloco: "cerco",
+  { id: "atravessa_piso", de: B2 + 0.3, ate: B3 - 0.2, fundo: "sala", bloco: "cerco", subsolo: true, luz: "noite",
     cam: [[560, 1770, 2.0], [540, 2330, 1.5]],
     at: { Daniel: { x: 470, expr: "panico", pose: "recuar", olhar: [0.4, 1] }, Marina: { x: 830, expr: "panico", pose: "recuar", olhar: [-0.6, 1] } } },
-  { id: "subsolo", de: B3 - 0.2, ate: PRETO, fundo: "sala", bloco: "cerco",
+  { id: "subsolo", de: B3 - 0.2, ate: PRETO, fundo: "sala", bloco: "cerco", subsolo: true, luz: "noite",
     cam: [[540, 2330, 1.5], [540, 2250, 1.8]],
     at: { Daniel: { x: 470, expr: "panico", pose: "recuar" }, Marina: { x: 830, expr: "panico", pose: "recuar" } } },
 ];
 
-// ---------- legendas ----------
-const corDoPersonagem = (p: string) => (p === "Helena" ? "#7ef0ff" : p === "Narrador" ? "#ffe9a8" : COLORS.white);
-const palavras: Word[] = falas.flatMap((f) => f.palavras.map((w) => ({ ...w, color: corDoPersonagem(f.p) })));
+const plano = (id: string) => SHOTS.find((s) => s.id === id)!;
+const VULTO = plano("vulto");
+const FIM_VULTO = fim("07") + 0.3;
+const RELOGIO_SHOT = plano("relogio");
 
-const decai = (t: number, em: number, dur: number) => (t >= em && t < em + dur ? 1 - (t - em) / dur : 0);
-const suave = Easing.inOut(Easing.cubic);
-
-const Som = ({ em, src, volume = 1, loop = false }: { em: number; src: string; volume?: number; loop?: boolean }) => (
-  <Sequence from={Math.max(0, Math.round(em * FPS))}>
-    <Audio src={staticFile(`ep01/sfx/${src}.mp3`)} volume={volume} loop={loop} />
-  </Sequence>
-);
-
-export const Ep01 = () => {
-  const frame = useCurrentFrame();
-  const t = frame / FPS;
-  const escuro = t >= PRETO;
-  const shot = SHOTS.find((s) => t >= s.de && t < s.ate) ?? SHOTS[SHOTS.length - 1];
-  const p = suave(Math.min(1, Math.max(0, (t - shot.de) / (shot.ate - shot.de))));
-  const lerp = (a: number, b: number) => a + (b - a) * p;
-
-  // quem está falando agora (a boca só abre durante as palavras)
-  const fala = falas.find((f) => t >= f.inicio && t < f.fim);
-  const emPalavra = !!fala?.palavras.some((w) => t >= w.start - 0.03 && t < w.end + 0.05);
-  const helena = fala?.p === "Helena";
-
-  // eventos
+const fx = ({ t, shot, fala }: Contexto) => {
   const batida = Math.max(decai(t, B1, 0.45), decai(t, B2, 0.45));
   const soco = decai(t, B3, 0.5);
-  const rachadura = t < B1 ? 0 : t < B2 ? 0.45 : 1;
-  const tVulto = SHOTS.find((s) => s.id === "vulto")!;
-  const fimVulto = fim("07") + 0.3;
-  const vulto = t >= tVulto.de && t < fimVulto ? (t - tVulto.de) / (fimVulto - tVulto.de) : null;
-  const portaTreme = decai(t, tVulto.de + 0.15, 0.6);
-  const tRelogio = SHOTS.find((s) => s.id === "relogio")!;
-
-  // câmera
-  const z = lerp(shot.cam[0][2], shot.cam[1][2]);
-  const impacto = Math.max(batida, soco, portaTreme) * 16;
-  const forca = (shot.tremor ?? 0) + impacto;
-  // O subsolo só entra em quadro quando a câmera atravessa o piso.
-  const abaixo = shot.id === "atravessa_piso" || shot.id === "subsolo";
-  const altura = shot.fundo !== "sala" ? 1920 : abaixo ? MUNDO_ALTURA : 2050;
-  const limita = (v: number, meio: number, max: number) => Math.min(max - meio, Math.max(meio, v));
-  const cx = limita(lerp(shot.cam[0][0], shot.cam[1][0]), 540 / z, 1080) + Math.sin(t * 47) * forca * 0.5 + Math.sin(t * 0.9) * 3;
-  const cy = limita(lerp(shot.cam[0][1], shot.cam[1][1]), 960 / z, altura) + Math.cos(t * 53) * forca * 0.5 + Math.sin(t * 0.7) * 3;
-  const viewBox = `${cx - 540 / z} ${cy - 960 / z} ${1080 / z} ${1920 / z}`;
-
-  // luz
-  const luzTipo: Luz = abaixo ? "noite" : shot.luz ?? "normal";
-  const apagao = luzTipo === "pisca" ? (Math.sin(t * 23) * Math.sin(t * 7.3) > 0.1 ? 0.15 : 0.9) : 1;
-  const nivelLuz = luzTipo === "vermelha" ? 0.1 : luzTipo === "ciano" ? 0.35 : 0.8 * apagao;
-  const tinta: Record<Luz, string> = {
-    normal: "rgba(8,14,34,0.34)",
-    vermelha: `rgba(150,10,14,${0.36 + 0.2 * Math.sin(t * 9) ** 2})`,
-    ciano: "rgba(10,70,96,0.36)",
-    pisca: `rgba(4,6,14,${apagao < 0.5 ? 0.7 : 0.3})`,
-    noite: "rgba(6,10,30,0.2)",
+  const portaTreme = decai(t, VULTO.de + 0.15, 0.6);
+  return {
+    sala: {
+      falante: fala?.p === "Helena" || shot.id === "falante_volta",
+      vulto: t >= VULTO.de && t < FIM_VULTO ? (t - VULTO.de) / (FIM_VULTO - VULTO.de) : null,
+      portaTreme, batida, soco,
+      rachadura: t < B1 ? 0 : t < B2 ? 0.45 : 1,
+    },
+    impacto: Math.max(batida, soco, portaTreme),
+    flash: Math.max(batida, soco),
   };
-
-  // atores do plano atual
-  const bloco = shot.bloco ? BLOCOS[shot.bloco] : null;
-  const atores = bloco
-    ? NOMES.map((nome, i) => {
-        const est = { ...bloco[nome], ...(shot.at?.[nome] ?? {}) };
-        const x = est.xPara !== undefined ? lerp(est.x, est.xPara) : est.x;
-        const y = est.yPara !== undefined ? lerp(est.y, est.yPara) : est.y;
-        const andando = (est.xPara !== undefined || est.yPara !== undefined) && p > 0.02 && p < 0.98;
-        return { nome, est, x, y, andando, i };
-      }).sort((a, b) => a.y - b.y)
-    : [];
-
-  return (
-    <AbsoluteFill style={{ backgroundColor: "#000" }}>
-      {!escuro && (
-        <>
-          <svg width={1080} height={1920} viewBox={viewBox} preserveAspectRatio="xMidYMid slice" style={{ position: "absolute", inset: 0 }}>
-            {shot.fundo === "patio" && <Patio t={t} />}
-            {shot.fundo === "fachada" && <Fachada t={t} />}
-            {shot.fundo === "sala" && (
-              <Sala t={t} luz={nivelLuz} falante={helena || shot.id === "falante_volta"} vulto={vulto}
-                portaTreme={portaTreme} mesa={!!shot.mesa} batida={batida} rachadura={rachadura} soco={soco} />
-            )}
-            {atores.map(({ nome, est, x, y, andando, i }) =>
-              est.oculto ? null : (
-                <g key={nome} transform={`translate(${x} ${y}) scale(${est.s})`}>
-                  <ellipse cx={0} cy={0} rx={120} ry={22} fill="#000" opacity={0.35} />
-                  <Ator v={VISUAL[nome]} t={t} expr={est.expr} pose={est.pose} olhar={est.olhar}
-                    falando={fala?.p === nome && emPalavra} andando={andando} tremor={est.tremor} fase={i * 1.9} />
-                </g>
-              ),
-            )}
-          </svg>
-          <AbsoluteFill style={{ background: tinta[luzTipo], mixBlendMode: "multiply" }} />
-          {(luzTipo === "vermelha" || luzTipo === "ciano") && (
-            <AbsoluteFill style={{ background: luzTipo === "vermelha" ? "rgba(255,40,40,0.10)" : "rgba(80,230,255,0.08)" }} />
-          )}
-          <AbsoluteFill style={{ background: "radial-gradient(ellipse at 50% 45%, rgba(0,0,0,0) 45%, rgba(0,0,0,0.72) 100%)" }} />
-          {t >= tRelogio.de && t < tRelogio.ate && (
-            <div style={{ position: "absolute", top: 300, left: 0, right: 0, textAlign: "center", fontFamily: FONT, fontSize: 190, color: COLORS.red, textShadow: `0 0 34px ${COLORS.red}` }}>
-              03:17
-            </div>
-          )}
-          {(batida > 0 || soco > 0) && <AbsoluteFill style={{ background: "#fff", opacity: Math.max(batida, soco) * 0.22 }} />}
-        </>
-      )}
-
-      {escuro && t > PRETO + 0.5 && (
-        <AbsoluteFill style={{ alignItems: "center", justifyContent: "center", fontFamily: FONT, color: "#e9e9ea", opacity: interpolate(t, [PRETO + 0.5, PRETO + 1.0], [0, 1], { extrapolateRight: "clamp" }) }}>
-          <div style={{ fontSize: 120, letterSpacing: 4 }}>O ÚLTIMO SINAL</div>
-          <div style={{ fontSize: 46, color: COLORS.red, marginTop: 18, letterSpacing: 6 }}>CONTINUA</div>
-        </AbsoluteFill>
-      )}
-
-      {!escuro && <WordCaptions words={palavras} perLine={3} y={0.69} size={86} />}
-
-      {/* falas */}
-      {falas.map((f) => (
-        <Sequence key={f.n} from={Math.round(f.inicio * FPS)}>
-          <Audio src={staticFile(f.arquivo)} volume={1} />
-        </Sequence>
-      ))}
-      {/* trilha e efeitos */}
-      <Sequence durationInFrames={Math.round(PRETO * FPS)}>
-        <Audio src={staticFile("ep01/sfx/drone.mp3")} volume={0.28} loop />
-      </Sequence>
-      <Som em={0} src="sino" volume={0.45} />
-      {falas.filter((f) => f.p === "Helena").map((f) => <Som key={f.n} em={f.inicio - 0.25} src="estatica" volume={0.35} />)}
-      <Sequence from={Math.round((ini("02") - 0.45) * FPS)} durationInFrames={Math.round((fim("02") + 0.95 - ini("02")) * FPS)}>
-        <Audio src={staticFile("ep01/sfx/zumbis.mp3")} volume={0.5} />
-      </Sequence>
-      <Som em={tVulto.de + 0.15} src="porta" volume={0.9} />
-      <Som em={tRelogio.de} src="luz" volume={0.5} />
-      <Som em={tRelogio.de + 0.1} src="sino" volume={0.5} />
-      <Som em={B1} src="batida" volume={1} />
-      <Som em={B2} src="batida" volume={1} />
-      <Som em={B3} src="batida" volume={1} />
-      <Som em={PRETO} src="impacto" volume={0.8} />
-    </AbsoluteFill>
-  );
 };
+
+const sobre = ({ t }: Contexto) =>
+  t >= RELOGIO_SHOT.de && t < RELOGIO_SHOT.ate ? (
+    <div style={{ position: "absolute", top: 300, left: 0, right: 0, textAlign: "center", fontFamily: FONT, fontSize: 190, color: COLORS.red, textShadow: `0 0 34px ${COLORS.red}` }}>
+      03:17
+    </div>
+  ) : null;
+
+export const Titulo = ({ t, de }: { t: number; de: number }) => (
+  <AbsoluteFill style={{ alignItems: "center", justifyContent: "center", fontFamily: FONT, color: "#e9e9ea", opacity: interpolate(t, [de, de + 0.5], [0, 1], { extrapolateLeft: "clamp", extrapolateRight: "clamp" }) }}>
+    <div style={{ fontSize: 120, letterSpacing: 4 }}>O ÚLTIMO SINAL</div>
+    <div style={{ fontSize: 46, color: COLORS.red, marginTop: 18, letterSpacing: 6 }}>CONTINUA</div>
+  </AbsoluteFill>
+);
+
+export const corLegenda = (p: string) =>
+  p === "Helena" ? "#7ef0ff" : p === "Narrador" ? "#ffe9a8" : p === "Desconhecida" ? "#b8bcc4" : COLORS.white;
+
+const SFX = "ep01/sfx/";
+
+export const Ep01 = () => (
+  <Episodio
+    manifesto={manifesto} shots={SHOTS} blocos={BLOCOS} preto={PRETO}
+    fx={fx} sobre={sobre} corLegenda={corLegenda} trilha={`${SFX}drone.mp3`}
+    final={(t) => <Titulo t={t} de={PRETO + 0.5} />}
+    sons={
+      <>
+        <Som fps={FPS} em={0} src={`${SFX}sino.mp3`} volume={0.45} />
+        {falas.filter((f) => f.p === "Helena").map((f) => (
+          <Som key={f.n} fps={FPS} em={f.inicio - 0.25} src={`${SFX}estatica.mp3`} volume={0.35} />
+        ))}
+        <Som fps={FPS} em={ini("02") - 0.45} src={`${SFX}zumbis.mp3`} volume={0.5} dur={fim("02") + 0.95 - ini("02")} />
+        <Som fps={FPS} em={VULTO.de + 0.15} src={`${SFX}porta.mp3`} volume={0.9} />
+        <Som fps={FPS} em={RELOGIO_SHOT.de} src={`${SFX}luz.mp3`} volume={0.5} />
+        <Som fps={FPS} em={RELOGIO_SHOT.de + 0.1} src={`${SFX}sino.mp3`} volume={0.5} />
+        {[B1, B2, B3].map((b) => <Som key={b} fps={FPS} em={b} src={`${SFX}batida.mp3`} />)}
+        <Som fps={FPS} em={PRETO} src={`${SFX}impacto.mp3`} volume={0.8} />
+      </>
+    }
+  />
+);
 
 export const EP01_DURACAO = Math.round(manifesto.duracao * FPS);
 export const EP01_FPS = FPS;

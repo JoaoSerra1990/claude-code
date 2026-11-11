@@ -1,6 +1,6 @@
 """Gera as falas do episódio via API do ElevenLabs.
 
-Uso: python3 scripts/gerar_falas.py episodios/ep01_falas.json out/ep01/falas
+Uso: python3 scripts/gerar_falas.py episodios/ep02_falas.json out/ep02/falas
 A chave da API é injetada pelo proxy do ambiente; não é lida daqui.
 """
 import json, os, sys, urllib.request, urllib.error, base64
@@ -21,8 +21,9 @@ def gerar(voice_id, texto, saida_mp3):
 def main(entrada, pasta):
     os.makedirs(pasta, exist_ok=True)
     falas = json.load(open(entrada, encoding="utf-8"))
+    ep = os.path.basename(entrada)[2:4]
     for f in falas:
-        nome = f"ep01_{f['n']}_{f['p'].lower().replace('í','i')}"
+        nome = f"ep{ep}_{f['n']}_{f['p'].lower().replace('í','i')}"
         texto = f"{f['emo']} {f['t']}"
         alinhamento = gerar(ELENCO["vozes"][f["p"]], texto, os.path.join(pasta, nome + ".mp3"))
         with open(os.path.join(pasta, nome + ".json"), "w", encoding="utf-8") as j:

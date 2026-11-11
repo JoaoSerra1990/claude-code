@@ -173,25 +173,36 @@ export const FALANTE: [number, number] = [800, 440];
 export const RELOGIO: [number, number] = [960, 240];
 export const VIDRO_PORTA: [number, number] = [540, 765];
 
-type SalaProps = {
+export type SalaProps = {
   t: number;
   /** Nível das luzes do teto, de 0 a 1. */
   luz: number;
-  falante: boolean;
+  falante?: boolean;
   /** Vulto passando atrás do vidro da porta: progresso 0..1, ou null. */
-  vulto: number | null;
-  portaTreme: number;
+  vulto?: number | null;
+  /** Infectado arranhando o vidro da porta: progresso 0..1, ou null. */
+  arranha?: number | null;
+  portaTreme?: number;
   /** Carteira em que Carlos sobe para alcançar o alto-falante. */
-  mesa: boolean;
+  mesa?: boolean;
   /** Intensidade da batida no piso (1 no impacto, cai até 0). */
-  batida: number;
+  batida?: number;
   /** Quanto o piso já rachou, de 0 a 1. */
-  rachadura: number;
+  rachadura?: number;
+  /** Tábuas soltas se afastando e revelando a placa metálica, de 0 a 1. */
+  afasta?: number;
+  /** Abertura da escotilha, de 0 a 1. */
+  escotilha?: number;
+  /** Mão pálida saindo da escotilha com a fotografia, de 0 a 1. */
+  maoFoto?: number;
   /** Soco de baixo para cima, visto no subsolo (1 no impacto). */
-  soco: number;
+  soco?: number;
 };
 
-export const Sala = ({ t, luz, falante, vulto, portaTreme, mesa, batida, rachadura, soco }: SalaProps) => {
+export const Sala = ({
+  t, luz, falante = false, vulto = null, arranha = null, portaTreme = 0, mesa = false,
+  batida = 0, rachadura = 0, afasta = 0, escotilha = 0, maoFoto = 0, soco = 0,
+}: SalaProps) => {
   const poeira = Array.from({ length: 36 }, (_, i) => ({
     x: 60 + ((i * 97) % 520),
     y: 1300 - ((i * 211 + t * (22 + (i % 3) * 12)) % 700),
@@ -220,6 +231,10 @@ export const Sala = ({ t, luz, falante, vulto, portaTreme, mesa, batida, rachadu
           <stop offset="0" stopColor="#fff2cc" stopOpacity="0.45" />
           <stop offset="1" stopColor="#fff2cc" stopOpacity="0" />
         </radialGradient>
+        <linearGradient id="rubro" x1="0" y1="1" x2="0" y2="0">
+          <stop offset="0" stopColor="#ff3324" stopOpacity="0.85" />
+          <stop offset="1" stopColor="#ff3324" stopOpacity="0" />
+        </linearGradient>
         <radialGradient id="verde" cx="50%" cy="50%" r="50%">
           <stop offset="0" stopColor="#4dffb0" stopOpacity="0.5" />
           <stop offset="1" stopColor="#4dffb0" stopOpacity="0" />
@@ -324,6 +339,22 @@ export const Sala = ({ t, luz, falante, vulto, portaTreme, mesa, batida, rachadu
             </g>
           </g>
         )}
+        {arranha !== null && (
+          <g clipPath="url(#vidro)">
+            <ellipse cx={530} cy={800 + Math.sin(t * 3) * 5} rx={64} ry={78} fill="#7d957a" />
+            <rect x={450} y={860} width={170} height={40} fill="#3a4a3a" />
+            <circle cx={506} cy={786} r={14} fill="#f2f5f7" />
+            <circle cx={556} cy={786} r={14} fill="#f2f5f7" />
+            <rect x={510} y={826} width={42} height={12} rx={4} fill="#2a1114" />
+            {[0, 1, 2].map((i) => (
+              <line key={i} x1={578 + i * 12} y1={696} x2={574 + i * 12} y2={696 + arranha * 140} stroke="#dbe8f0" strokeWidth={3} opacity={0.75} />
+            ))}
+            <g transform={`translate(590 ${700 + arranha * 140 + Math.sin(t * 30) * 3})`}>
+              <circle r={22} fill="#8aa085" />
+              {[0, 1, 2].map((i) => <rect key={i} x={-18 + i * 13} y={-40} width={10} height={26} rx={5} fill="#8aa085" />)}
+            </g>
+          </g>
+        )}
         <clipPath id="vidro"><rect x={466} y={680} width={148} height={172} /></clipPath>
         <rect x={630} y={960} width={12} height={44} fill="#8b8f99" />
       </g>
@@ -378,10 +409,38 @@ export const Sala = ({ t, luz, falante, vulto, portaTreme, mesa, batida, rachadu
         </g>
       )}
 
-      {/* tábuas soltas que pulam com as batidas */}
-      <g transform={`translate(0 ${salto})`}>
-        <rect x={420} y={1740} width={280} height={105} fill="#39363a" stroke="#141315" strokeWidth={5} />
-        <line x1={560} y1={1740} x2={560} y2={1845} stroke="#141315" strokeWidth={4} />
+      {/* placa metálica sob as tábuas; ela é a escotilha */}
+      {(afasta > 0 || escotilha > 0) && (
+        <g>
+          <rect x={426} y={1744} width={268} height={98} fill="#040506" />
+          {escotilha > 0 && <rect x={426} y={1744} width={268} height={98} fill="#ff2a1f" opacity={0.8 * escotilha} />}
+          {escotilha > 0 && <polygon points="426,1800 694,1800 960,820 160,820" fill="url(#rubro)" opacity={0.6 * escotilha} />}
+          {maoFoto > 0 && (
+            <g transform={`translate(600 ${1810 - 96 * maoFoto})`}>
+              <rect x={-16} y={10} width={32} height={90} rx={14} fill="#aab6af" />
+              <g transform="rotate(-10)">
+                <rect x={-58} y={-74} width={116} height={84} rx={4} fill="#efe8d6" stroke="#1a1a1a" strokeWidth={4} />
+                <rect x={-48} y={-64} width={96} height={56} fill="#27433c" />
+                {[0, 1, 2, 3, 4, 5].map((i) => <circle key={i} cx={-38 + i * 15} cy={-30} r={6} fill="#d8c3a8" />)}
+              </g>
+              <circle cx={0} cy={6} r={22} fill="#c3cec7" />
+              {[0, 1, 2, 3].map((d) => <rect key={d} x={-24 + d * 13} y={-18} width={10} height={24} rx={5} fill="#b4c0b9" />)}
+            </g>
+          )}
+          <g transform={`translate(0 ${-52 * escotilha}) rotate(${-8 * escotilha} 430 1795)`}>
+            <rect x={434} y={1750} width={252} height={86} rx={6} fill="#5b6470" stroke="#23282f" strokeWidth={6} />
+            {[[448, 1764], [672, 1764], [448, 1822], [672, 1822]].map(([x, y], i) => <circle key={i} cx={x} cy={y} r={6} fill="#2c323a" />)}
+            <text x={560} y={1792} textAnchor="middle" fontFamily={FONT} fontSize={38} fill="#e9d36a">SETOR H</text>
+            <text x={560} y={1822} textAnchor="middle" fontFamily={FONT} fontSize={21} fill="#d7dbe2" letterSpacing={2}>ACESSO RESTRITO</text>
+          </g>
+        </g>
+      )}
+      {/* tábuas soltas: pulam com as batidas e se afastam para revelar a placa */}
+      <g transform={`translate(${-152 * afasta} ${salto})`}>
+        <rect x={420} y={1740} width={140} height={105} fill="#39363a" stroke="#141315" strokeWidth={5} />
+      </g>
+      <g transform={`translate(${152 * afasta} ${salto})`}>
+        <rect x={560} y={1740} width={140} height={105} fill="#39363a" stroke="#141315" strokeWidth={5} />
       </g>
       {rachadura > 0 && (
         <g opacity={Math.min(1, rachadura * 2)} stroke="#050506" strokeWidth={7} fill="none" strokeLinecap="round">
@@ -420,7 +479,7 @@ export const Sala = ({ t, luz, falante, vulto, portaTreme, mesa, batida, rachadu
         </g>
       ))}
       <rect x={410} y={2250} width={260} height={64} rx={8} fill="#6d1c1c" />
-      <text x={540} y={2296} textAnchor="middle" fontFamily={FONT} fontSize={40} fill="#f3e9e9">SETOR B</text>
+      <text x={540} y={2296} textAnchor="middle" fontFamily={FONT} fontSize={40} fill="#f3e9e9">SETOR H</text>
       <circle cx={700} cy={2282} r={12} fill={COLORS.red} opacity={0.3 + 0.7 * (Math.sin(t * 6) > 0 ? 1 : 0)} />
       {/* piso gradeado */}
       <rect x={0} y={2880} width={1080} height={120} fill="#0c1715" />
