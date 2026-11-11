@@ -1,0 +1,14 @@
+[
+  {"n": "01", "p": "Narrador", "emo": "[grave, mysterious, hushed]", "t": "Há trinta anos, nenhum trem passava por aquela estação. Mas todas as noites, exatamente às três e dezessete, um deles aparecia. E naquela madrugada, alguém decidiu entrar."},
+  {"n": "02", "p": "Narrador", "emo": "[grave, melancholic]", "t": "Clara procurava o irmão desaparecido havia sete anos. E foi por isso que reconheceu imediatamente o homem sentado no último banco."},
+  {"n": "03", "p": "Clara", "voz": "Lívia", "emo": "[whispers, disbelief, trembling]", "t": "Miguel?"},
+  {"n": "04", "p": "Miguel", "voz": "Rafael", "emo": "[frightened, low, urgent]", "t": "Você não devia estar aqui."},
+  {"n": "05", "p": "Narrador", "emo": "[grave, uneasy, wonder]", "t": "Clara tentou abraçá-lo. Mas Miguel apontou para a janela. Do lado de fora, a cidade estava diferente. Os prédios eram novos. Os carros… não tinham motoristas."},
+  {"n": "06", "p": "Cobrador", "voz": "Carlos", "filtro": "memoria", "emo": "[calm, cold, formal, slow]", "t": "Uma escolha. Apenas uma."},
+  {"n": "07", "p": "Narrador", "emo": "[grave, revealing]", "t": "Miguel explicou que aquele trem não atravessava cidades. Atravessava as vidas que poderiam ter existido."},
+  {"n": "08", "p": "Narrador", "emo": "[grave, sorrowful, slow]", "t": "Clara finalmente compreendeu. Sete anos antes, Miguel havia entrado naquele trem e escolhido uma vida diferente. Uma vida em que sua família jamais o conhecera."},
+  {"n": "09", "p": "Miguel", "voz": "Rafael", "emo": "[gentle, sad, tempting softly]", "t": "Se ficar, pode escolher uma vida em que nunca sofreu."},
+  {"n": "10", "p": "Narrador", "emo": "[grave, tender, restrained]", "t": "Por um instante, Clara quase aceitou. Mas então olhou para o irmão e fez uma pergunta."},
+  {"n": "11", "p": "Clara", "voz": "Lívia", "emo": "[fragile, voice breaking, quiet]", "t": "E nessa vida… eu ainda vou me lembrar de você?"},
+  {"n": "12", "p": "Narrador", "emo": "[grave, emotional, warm, slow]", "t": "Clara voltou para a vida que conhecia. Não porque fosse perfeita… mas porque era a única em que ainda podia amar o irmão que havia perdido."}
+]

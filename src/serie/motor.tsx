@@ -84,11 +84,21 @@ export const decai = (t: number, em: number, dur: number) => (t >= em && t < em 
 /** Vai de 0 a 1 entre `de` e `ate`, com limites. */
 export const sobe = (t: number, de: number, ate: number) => Math.min(1, Math.max(0, (t - de) / (ate - de)));
 
-export const Som = ({ em, src, fps, volume = 1, dur }: { em: number; src: string; fps: number; volume?: number; dur?: number }) => (
-  <Sequence from={Math.max(0, Math.round(em * fps))} durationInFrames={dur ? Math.round(dur * fps) : undefined}>
-    <Audio src={staticFile(src)} volume={volume} />
-  </Sequence>
-);
+export const Som = ({ em, src, fps, volume = 1, dur, some }: {
+  em: number; src: string; fps: number; volume?: number; dur?: number;
+  /** Segundos de fade no fim do trecho (exige `dur`). */
+  some?: number;
+}) => {
+  const quadros = dur ? Math.round(dur * fps) : undefined;
+  return (
+    <Sequence from={Math.max(0, Math.round(em * fps))} durationInFrames={quadros}>
+      <Audio
+        src={staticFile(src)}
+        volume={some && quadros ? (f) => volume * Math.min(1, Math.max(0, (quadros - f) / (some * fps))) : volume}
+      />
+    </Sequence>
+  );
+};
 
 const suave = Easing.inOut(Easing.cubic);
 
