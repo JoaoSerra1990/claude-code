@@ -1,0 +1,14 @@
+{
+  "_nota": "Vozes premade (funcionam no plano Free). Para trocar por vozes em português, troque o voice_id aqui. As vozes 'ULTIMO SINAL - *' já estão na conta, mas exigem plano pago para uso via API.",
+  "modelo": "eleven_v3",
+  "vozes": {
+    "Narrador": "nPczCjzI2devNBz1zQrb",
+    "Carlos": "pqHfZKP75CvOlQylNhV4",
+    "Daniel": "IKne3meq5aSn9XLyUdCD",
+    "Pedro": "TX3LPaxmHKxFdv7VOQHJ",
+    "Rafael": "bIHbv24MWmeRgasZH58o",
+    "Marina": "XrExE9yKIg1WjnnlVkGX",
+    "Lívia": "pFZP5JQG7iQjIQuC4Bku",
+    "Helena": "EXAVITQu4vr4xnSDxMaL"
+  }
+}

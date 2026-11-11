@@ -1,0 +1,19 @@
+[
+  {"n": "01", "p": "Helena", "emo": "[cold, urgent]", "t": "Não deixem o professor Carlos sair dessa sala! Ele sabe por que vocês estão presos aqui!"},
+  {"n": "02", "p": "Narrador", "emo": "[serious, calm]", "t": "Terceiro dia do apocalipse. A cidade havia caído. E, dentro daquela escola, seis pessoas ainda estavam vivas."},
+  {"n": "03", "p": "Pedro", "emo": "[nervous, whispers]", "t": "Isso é tudo que sobrou?"},
+  {"n": "04", "p": "Marina", "emo": "[firm, tense]", "t": "Se ninguém encontrar comida, amanhã a gente não come."},
+  {"n": "05", "p": "Carlos", "emo": "[tired, firm]", "t": "Ninguém sai daqui até amanhecer."},
+  {"n": "06", "p": "Daniel", "emo": "[defiant, angry]", "t": "E depois? Vamos esperar até morrer de fome?"},
+  {"n": "07", "p": "Rafael", "emo": "[whispers, cautious]", "t": "Tem alguma coisa perto da porta."},
+  {"n": "08", "p": "Lívia", "emo": "[fearful, soft]", "t": "Mas... não tem energia."},
+  {"n": "09", "p": "Rafael", "emo": "[uneasy, puzzled]", "t": "Esse sistema não devia funcionar."},
+  {"n": "10", "p": "Helena", "emo": "[cold, whispers]", "t": "Daniel... se você quiser sair vivo, não confie nele."},
+  {"n": "11", "p": "Daniel", "emo": "[suspicious, tense]", "t": "Quem está falando? E por que ela sabe meu nome?"},
+  {"n": "12", "p": "Carlos", "emo": "[desperate, shouting]", "t": "Eu não sei!"},
+  {"n": "13", "p": "Marina", "emo": "[suspicious, sharp]", "t": "Então por que ela falou de você?"},
+  {"n": "14", "p": "Carlos", "emo": "[pleading, broken]", "t": "Vocês precisam acreditar em mim."},
+  {"n": "15", "p": "Helena", "emo": "[cold, mysterious]", "t": "Professor Carlos... eles já descobriram o laboratório?"},
+  {"n": "16", "p": "Daniel", "emo": "[confused]", "t": "Que laboratório?"},
+  {"n": "17", "p": "Helena", "emo": "[whispers, ominous]", "t": "O que fica embaixo da sala de vocês."}
+]
