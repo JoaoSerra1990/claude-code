@@ -19,6 +19,12 @@ FILTROS_SERIE = {
     "Desconhecida": ["lowpass=f=560", "aecho=0.8:0.7:70:0.45", "volume=2.4"],
 }
 
+# Filtros que uma fala pode pedir pelo campo "filtro".
+FILTROS_NOMEADOS = {
+    "radio": ["highpass=f=420", "lowpass=f=2600", "acrusher=bits=8:mode=log:aa=1:mix=0.35", "volume=1.5"],
+    "memoria": ["aecho=0.8:0.6:45:0.28"],
+}
+
 # Por projeto: quando a primeira fala começa, as pausas maiores antes de certas
 # falas (que dão tempo às ações sem diálogo) e o tempo final depois da última.
 PROJETOS = {
@@ -29,6 +35,9 @@ PROJETOS = {
              "gaps": {"02": 0.5, "03": 1.6, "05": 3.6, "06": 0.5, "07": 0.7, "08": 2.8,
                       "09": 0.5, "10": 0.5, "11": 0.8, "12": 0.5, "13": 0.7, "14": 2.6,
                       "15": 0.8, "17": 10.6}},
+    "mare01": {"inicio": 0.4, "filtros": {}, "preto": 0.5, "cauda": 2.4,
+               "gaps": {"02": 0.7, "03": 2.0, "04": 0.8, "05": 0.9, "06": 0.7, "07": 2.8, "08": 0.6,
+                        "09": 1.8, "10": 0.8, "11": 2.4, "12": 0.5, "13": 1.3}},
     "minutos": {"inicio": 0.5, "filtros": {}, "preto": 1.4, "cauda": 4.8,
                 "gaps": {"02": 1.0, "03": 0.8, "04": 2.4, "05": 3.6, "06": 1.2, "07": 1.8,
                          "08": 3.6, "09": 0.8, "10": 0.8, "11": 3.0}},
@@ -92,7 +101,8 @@ def main(projeto):
             cursor += cfg["gaps"].get(f["n"], GAP) / VELOCIDADE
         nome = nome_arquivo(projeto, f)
         destino = f"public/{projeto}/falas/{nome}.mp3"
-        exportar(os.path.join(origem, nome + ".mp3"), destino, cfg["filtros"].get(f["p"], []))
+        filtros = FILTROS_NOMEADOS[f["filtro"]] if "filtro" in f else cfg["filtros"].get(f["p"], [])
+        exportar(os.path.join(origem, nome + ".mp3"), destino, filtros)
         dur = duracao(destino)
         alinh = json.load(open(os.path.join(origem, nome + ".json"), encoding="utf-8"))
         clipes.append({

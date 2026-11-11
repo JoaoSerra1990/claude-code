@@ -39,7 +39,7 @@ export const est = (
 export const rosto = (b: Bloco, n: string): [number, number] => [b[n].x, b[n].y - 690 * b[n].s];
 
 export type Cam = [number, number, number]; // centro x, centro y, zoom
-export type Luz = "normal" | "vermelha" | "ciano" | "pisca" | "noite" | "fria" | "dourada" | "abajur";
+export type Luz = "normal" | "vermelha" | "ciano" | "pisca" | "noite" | "fria" | "dourada" | "abajur" | "dia" | "ameaca";
 export type Shot = {
   id: string; de: number; ate: number;
   /** "sala", "patio" e "fachada" são da série; outros nomes pedem um `cenario` próprio. */
@@ -113,6 +113,8 @@ type Props = {
   /** Desenha o fundo de planos cujo `fundo` não é da série. */
   cenario?: (c: Contexto) => ReactNode;
   legendas?: boolean;
+  /** Força do escurecimento nas bordas, de 0 a 1. */
+  vinheta?: number;
   /** Faixa contínua de fundo, em loop até o corte para preto. */
   trilha?: string;
   sons?: ReactNode;
@@ -120,7 +122,7 @@ type Props = {
 
 export const Episodio = ({
   manifesto, shots, blocos, preto, fx, itens, frente, sobre, final, corLegenda, trilha, sons,
-  elenco = VISUAL, cenario, legendas = true,
+  elenco = VISUAL, cenario, legendas = true, vinheta = 0.72,
 }: Props) => {
   const frame = useCurrentFrame();
   const fps = manifesto.fps;
@@ -158,6 +160,8 @@ export const Episodio = ({
     fria: "rgba(188,204,232,0.95)",
     dourada: "rgba(255,226,176,0.95)",
     abajur: "rgba(214,168,112,0.95)",
+    dia: "rgba(255,255,255,1)",
+    ameaca: "rgba(150,168,186,0.95)",
   };
 
   // atores e objetos do plano, ordenados por profundidade
@@ -206,7 +210,7 @@ export const Episodio = ({
           {(luzTipo === "vermelha" || luzTipo === "ciano") && (
             <AbsoluteFill style={{ background: luzTipo === "vermelha" ? "rgba(255,40,40,0.10)" : "rgba(80,230,255,0.08)" }} />
           )}
-          <AbsoluteFill style={{ background: "radial-gradient(ellipse at 50% 45%, rgba(0,0,0,0) 45%, rgba(0,0,0,0.72) 100%)" }} />
+          <AbsoluteFill style={{ background: `radial-gradient(ellipse at 50% 45%, rgba(0,0,0,0) 45%, rgba(0,0,0,${vinheta}) 100%)` }} />
           {flash > 0 && <AbsoluteFill style={{ background: "#fff", opacity: flash * 0.22 }} />}
         </>
       )}

@@ -1,0 +1,15 @@
+[
+  {"n": "01", "p": "Narrador", "emo": "[grave, ominous, measured]", "t": "Às nove e dezessete da manhã, o oceano começou a desaparecer. E quase ninguém percebeu que aquilo era uma sentença de morte."},
+  {"n": "02", "p": "Narrador", "emo": "[grave, uneasy]", "t": "O que deveria provocar pânico virou atração. Centenas de pessoas correram para fotografar o fundo do mar, agora exposto por quilômetros."},
+  {"n": "03", "p": "Rogerio", "voz": "Carlos", "filtro": "memoria", "emo": "[calm, fatherly, serious]", "t": "Filho, se um dia o mar fugir de repente, não fique olhando. Corra para o lugar mais alto que encontrar."},
+  {"n": "04", "p": "Narrador", "emo": "[grave, tense, quiet]", "t": "Lucas se lembrou daquelas palavras. E sentiu o sangue gelar."},
+  {"n": "05", "p": "Lucas", "voz": "Daniel", "emo": "[shouting, desperate, urgent]", "t": "SAIAM DA PRAIA! VAI VIR UMA ONDA!"},
+  {"n": "06", "p": "Narrador", "emo": "[grave, urgent]", "t": "Alguns riram. Outros continuaram filmando. Mas Marina percebeu que até os pássaros estavam fugindo em direção aos morros."},
+  {"n": "07", "p": "Rogerio", "voz": "Carlos", "filtro": "radio", "emo": "[urgent, strained, shouting over noise]", "t": "Lucas… se estiver me ouvindo… não vá para o farol!"},
+  {"n": "08", "p": "Narrador", "emo": "[grave, tense]", "t": "Era a voz do pai. Mas antes que Lucas pudesse responder, o sinal desapareceu."},
+  {"n": "09", "p": "Narrador", "emo": "[grave, dread, slow]", "t": "Então veio o som. Não parecia uma onda. Parecia um trovão que não terminava nunca."},
+  {"n": "10", "p": "Marina", "emo": "[terrified, breathless]", "t": "Lucas… olha o tamanho daquilo!"},
+  {"n": "11", "p": "Narrador", "emo": "[grave, urgent, building]", "t": "Lucas sabia que precisava correr para o alto. Mas naquele instante lembrou de uma coisa que fez seu coração parar."},
+  {"n": "12", "p": "Lucas", "voz": "Daniel", "emo": "[screaming, desperate, panicked]", "t": "A BIA! MINHA IRMÃ TÁ NA ESCOLA!"},
+  {"n": "13", "p": "Narrador", "emo": "[grave, final, cold]", "t": "E a água já estava chegando."}
+]

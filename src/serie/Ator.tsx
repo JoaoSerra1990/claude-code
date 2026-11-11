@@ -24,6 +24,8 @@ export type Visual = {
   barbaCor?: string;
   /** Casaco comprido, até os joelhos. */
   casaco?: boolean;
+  /** Mochila nas costas, nesta cor (aparecem as alças). */
+  mochila?: string;
   /** Bolsa transversal, nesta cor. */
   bolsa?: string;
   sobrancelha?: string;
@@ -235,9 +237,16 @@ export const Ator = ({
       {/* tronco */}
       <g transform={`translate(0 ${respira * 0.5})`}>
         {v.estilo === "longo" && <rect x={-112} y={-770} width={224} height={250} rx={70} fill={v.cabelo} />}
+        {v.mochila && <rect x={-116} y={-548} width={232} height={270} rx={50} fill={v.mochila} />}
         <rect x={-98} y={-562} width={196} height={326} rx={54} fill={roupa} />
         {v.casaco && <path d="M-98 -300 L-108 -92 L108 -92 L98 -300Z" fill={roupa} />}
         {v.casaco && <line x1={0} y1={-540} x2={0} y2={-96} stroke="#000" strokeOpacity={0.25} strokeWidth={6} />}
+        {v.mochila && (
+          <g>
+            <rect x={-78} y={-560} width={24} height={230} rx={10} fill={v.mochila} />
+            <rect x={54} y={-560} width={24} height={230} rx={10} fill={v.mochila} />
+          </g>
+        )}
         {v.bolsa && (
           <g>
             <line x1={-78} y1={-556} x2={88} y2={-300} stroke={v.bolsa} strokeWidth={16} />
