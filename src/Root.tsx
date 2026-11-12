@@ -9,6 +9,7 @@ import { Mare02, MARE02_DURACAO, MARE02_FPS } from "./mare02/Mare02";
 import { CidadeSemAmanha, CIDADE_DURACAO, CIDADE_FPS } from "./cidade/Cidade";
 import { Tempo, TEMPO_DURACAO, TEMPO_FPS } from "./tempo/Tempo";
 import { Futuro, FUTURO_DURACAO, FUTURO_FPS } from "./futuro/Futuro";
+import { Abismo, ABISMO_DURACAO, ABISMO_FPS } from "./abismo/Abismo";
 import { VIDEO } from "./theme";
 
 export const Root = () => (
@@ -85,6 +86,7 @@ export const Root = () => (
       width={VIDEO.width}
       height={VIDEO.height}
     />
+    <Composition id="Abismo" component={Abismo} durationInFrames={ABISMO_DURACAO} fps={ABISMO_FPS} width={VIDEO.width} height={VIDEO.height} />
     <Composition
       id="Demo"
       component={Demo}

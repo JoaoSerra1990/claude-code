@@ -1,0 +1,9 @@
+{
+ "sfx": {
+  "criatura": ["Colossal stone creature moving deep below, low rumbling groan, grinding rocks, distant and huge", 6],
+  "cabo": ["Steel cable launcher firing, whoosh of cable flying, metallic clank as hook locks", 3],
+  "vapor": ["Industrial cooling system activating, loud steam hiss releasing, pressure dropping", 5],
+  "comporta": ["Heavy rusted floodgate slowly opening, deep metal groan and rumble", 5]
+ },
+ "musica": ["Instrumental cinematic suspense score for a sci-fi mystery in foggy mountains: starts with low ominous drones and sparse piano, builds tension with pulsing strings and deep percussion, peaks in a dramatic climax around 65 seconds, then resolves into a warm hopeful orchestral ending. No vocals.", 90]
+}
