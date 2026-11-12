@@ -77,8 +77,9 @@ quando o limite de uso voltar. Ordem e situação (atualizar a cada curta):
 - 12 O Mundo em Silêncio (`silencio`): pronto e entregue no chat.
 - 13 O Último Sonho (`sonho`): pronto e entregue no chat.
 - 14 Quando a Névoa Chegou (`nevoa`): pronto e entregue no chat.
-- 15 Dez Minutos de Eternidade (`eternidade`): cenas prontas e conferidas; falta render final (`npx remotion render Eternidade out/eternidade/eternidade.mp4`) e envio. Trilha própria; as duas frases entre aspas do roteiro ganharam voz de personagem (filha idosa e bisneta).
-- 16 Os Homens do Destino, 17 Os Filhos da Noite: a fazer.
+- 15 Dez Minutos de Eternidade (`eternidade`): pronto e entregue no chat (as duas frases entre aspas do roteiro ganharam voz de personagem).
+- 16 Os Homens do Destino (`destino`): cenas prontas e conferidas; falta render final (`npx remotion render Destino out/destino/destino.mp4`) e envio. Trilha própria.
+- 17 Os Filhos da Noite: a fazer (Drive id 1hzXl0YEPt_gKGhARNcEaQ5mAecsIjVrq).
 Créditos do ElevenLabs estão curtos (ver `/v1/user/subscription`): a partir do 09, gerar só a narração e reaproveitar trilhas e efeitos de `public/*/sfx`.
 Custos medidos: narração eleven_v3 ≈ 0,5 crédito por caractere (~600 por curta). Reaproveitar
 efeitos de `public/*/sfx` e gerar só o que faltar com `scripts/gerar_sons.py`
