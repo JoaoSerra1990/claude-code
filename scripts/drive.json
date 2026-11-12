@@ -1,13 +1,28 @@
 {
-  "_nota": "Destino no Google Drive dos vídeos aprovados. Uploads a partir da sessão têm limite de 10 MB, por isso sobe a cópia gerada por scripts/comprimir_drive.sh.",
+  "_nota": "Destino no Google Drive dos vídeos aprovados. O envio a partir da sessão aceita cerca de 3 MB por arquivo, então sobe a cópia leve gerada por scripts/comprimir_drive.sh; o MP4 em qualidade máxima é entregue no chat.",
   "pastas": {
-    "ultimo_sinal": {"nome": "Animacoes/História 1 Daniel", "id": "1IRvjYp5h4OIHVtNXUxu9sfYk4Sxf_Ych"},
-    "mare": {"nome": "Animacoes/Maré", "id": "1g6KZ_dNOcF7iw8Lvcb_q9jzCNZ5RL9q7"},
-    "curtas": {"nome": "Animacoes/Curtas", "id": "1b2Guh3uLVTaOblZTbqHEM1XrIyfQ7bFc"}
+    "ultimo_sinal": {
+      "nome": "Animacoes/História 1 Daniel",
+      "id": "1IRvjYp5h4OIHVtNXUxu9sfYk4Sxf_Ych"
+    },
+    "mare": {
+      "nome": "Animacoes/Maré",
+      "id": "1g6KZ_dNOcF7iw8Lvcb_q9jzCNZ5RL9q7"
+    },
+    "curtas": {
+      "nome": "Animacoes/Curtas",
+      "id": "1b2Guh3uLVTaOblZTbqHEM1XrIyfQ7bFc"
+    }
   },
   "projetos": {
-    "ep01": "ultimo_sinal", "ep02": "ultimo_sinal",
-    "mare01": "mare", "mare02": "mare",
-    "minutos": "curtas", "trem": "curtas"
+    "ep01": "ultimo_sinal",
+    "ep02": "ultimo_sinal",
+    "mare01": "mare",
+    "mare02": "mare",
+    "minutos": "curtas",
+    "trem": "curtas",
+    "cidade": "curtas",
+    "tempo": "curtas",
+    "futuro": "curtas"
   }
 }
