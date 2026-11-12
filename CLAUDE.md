@@ -87,3 +87,25 @@ Créditos do ElevenLabs estão curtos (ver `/v1/user/subscription`): a partir do
 Custos medidos: narração eleven_v3 ≈ 0,5 crédito por caractere (~600 por curta). Reaproveitar
 efeitos de `public/*/sfx` e gerar só o que faltar com `scripts/gerar_sons.py`
 (`episodios/<projeto>_sons.json`). Conferência: `scripts/folha.sh out/<projeto>/previa.mp4`.
+
+## Lições do curso de animação do usuário (kit "videos-animados", estudado em nov/2026)
+O usuário comprou um curso com um kit de reels (avatarzinho, desenhado, 3D, estilos). O kit é pago e
+de terceiros: não copiar arquivos dele para este repositório. O que vale aplicar nos nossos vídeos:
+- **História:** um fio que o olho segura do começo ao fim (herói, objeto ou lugar); uma cor reservada
+  para uma única coisa da história; o final volta à imagem de abertura, mudada.
+- **Silêncio antes da virada:** baixar a trilha por 0,5 a 1 s com a imagem parada e pôr o golpe mais
+  alto na virada, na pausa antes da frase que a nomeia (debaixo da voz o efeito some). O momento mais
+  cheio não é o mais alto.
+- **Quadro:** algo novo a cada 2 a 4 s; encenar a ideia em vez de rotular; variar a escala e ter pelo
+  menos um close extremo; vida pequena em planos parados; evitar tudo surgindo em fade e brilho genérico.
+- **Zona segura 9:16:** o que importa fica em x 60–940, y 250–1500; elementos importantes com 100 px
+  ou mais; legenda com 50 px ou mais, cada uma na tela por 1,25 s ou mais.
+- **Cortes:** cada corte com um motivo dizível (próximo passo, causa e efeito, ponto de vista, salto de
+  tempo, retomada). Corte seco cai num quadro já completo; o que existia antes já está em cena.
+- **Movimento:** mola com leve passagem do ponto para o que tem massa, em vez de curva suave em tudo.
+- **Boca (lip sync):** o volume real decide o quanto abre e a letra decide a forma; cada forma dura
+  2 quadros ou mais; fecha em M/B/P; volta ao repouso em pausa; nunca depois do som; não animar todo
+  fonema. Piscar a cada 3 a 4 s e um pequeno pulo do corpo nas palavras fortes.
+- **Revisão:** olhar um quadro por segundo em tamanho de celular e anotar o plano mais fraco.
+Ainda não aplicado no motor (`src/serie`): boca guiada por volume e letra, molas, queda da trilha
+antes da virada.
