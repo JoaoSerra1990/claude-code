@@ -24,6 +24,10 @@ export type Visual = {
   barbaCor?: string;
   /** Casaco comprido, até os joelhos. */
   casaco?: boolean;
+  /** Chapéu de aba larga, nesta cor. */
+  chapeu?: string;
+  /** Cicatriz na sobrancelha. */
+  cicatriz?: boolean;
   /** Mochila nas costas, nesta cor (aparecem as alças). */
   mochila?: string;
   /** Bolsa transversal, nesta cor. */
@@ -297,6 +301,14 @@ export const Ator = ({
             </g>
           )}
           {boca()}
+          {v.cicatriz && <path d="M30 -770 L52 -738 M40 -772 L44 -760" stroke="#b5655a" strokeWidth={6} strokeLinecap="round" />}
+          {v.chapeu && (
+            <g>
+              <ellipse cx={0} cy={-760} rx={168} ry={30} fill={v.chapeu} />
+              <path d="M-96 -760 Q-100 -880 0 -884 Q100 -880 96 -760Z" fill={v.chapeu} />
+              <rect x={-98} y={-792} width={196} height={20} fill="#000" opacity={0.35} />
+            </g>
+          )}
           {r.suor && !zumbi && (
             <path
               d="M0 0 Q10 16 0 24 Q-10 16 0 0Z"

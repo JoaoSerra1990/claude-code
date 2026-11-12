@@ -6,6 +6,9 @@ import { Minutos, MINUTOS_DURACAO, MINUTOS_FPS } from "./minutos/Minutos";
 import { Mare01, MARE01_DURACAO, MARE01_FPS } from "./mare01/Mare01";
 import { Trem, TREM_DURACAO, TREM_FPS } from "./trem/Trem";
 import { Mare02, MARE02_DURACAO, MARE02_FPS } from "./mare02/Mare02";
+import { CidadeSemAmanha, CIDADE_DURACAO, CIDADE_FPS } from "./cidade/Cidade";
+import { Tempo, TEMPO_DURACAO, TEMPO_FPS } from "./tempo/Tempo";
+import { Futuro, FUTURO_DURACAO, FUTURO_FPS } from "./futuro/Futuro";
 import { VIDEO } from "./theme";
 
 export const Root = () => (
@@ -55,6 +58,30 @@ export const Root = () => (
       component={Mare02}
       durationInFrames={MARE02_DURACAO}
       fps={MARE02_FPS}
+      width={VIDEO.width}
+      height={VIDEO.height}
+    />
+    <Composition
+      id="Cidade"
+      component={CidadeSemAmanha}
+      durationInFrames={CIDADE_DURACAO}
+      fps={CIDADE_FPS}
+      width={VIDEO.width}
+      height={VIDEO.height}
+    />
+    <Composition
+      id="Tempo"
+      component={Tempo}
+      durationInFrames={TEMPO_DURACAO}
+      fps={TEMPO_FPS}
+      width={VIDEO.width}
+      height={VIDEO.height}
+    />
+    <Composition
+      id="Futuro"
+      component={Futuro}
+      durationInFrames={FUTURO_DURACAO}
+      fps={FUTURO_FPS}
       width={VIDEO.width}
       height={VIDEO.height}
     />

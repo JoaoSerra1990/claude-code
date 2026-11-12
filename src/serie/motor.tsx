@@ -26,6 +26,10 @@ export type Est = {
   x: number; y: number; s: number;
   expr: Expr; pose: PoseA; olhar: [number, number];
   xPara?: number; yPara?: number; sPara?: number; tremor?: boolean; oculto?: boolean;
+  /** Relógio holográfico flutuando acima da cabeça: texto e cor. */
+  holo?: string; holoCor?: string;
+  /** Quanto o ator já se desfez em partículas de luz, de 0 a 1. */
+  dissolve?: number; dissolvePara?: number;
   /** Olhos fechados, lágrima no rosto e cabeça balançando em negativa. */
   fechado?: boolean; lagrima?: boolean; nega?: boolean;
 };
@@ -67,6 +71,9 @@ export type Fx = {
   claraoCor?: string;
 };
 
+/** Palavra em minúsculas, sem aspas ou pontuação no começo. */
+const limpa = (s: string) => s.toLowerCase().replace(/^[^\p{L}\p{N}]+/u, "");
+
 /** Ajudantes para marcar tempos a partir das falas. */
 export const tempos = (m: Manifesto) => {
   const F = Object.fromEntries(m.falas.map((f) => [f.n, f]));
@@ -75,7 +82,7 @@ export const tempos = (m: Manifesto) => {
     fim: (n: string) => F[n].fim,
     /** Início da primeira palavra da fala `n` que começa com `prefixo`. */
     pal: (n: string, prefixo: string) =>
-      F[n].palavras.find((w) => w.text.toLowerCase().startsWith(prefixo))?.start ?? F[n].inicio,
+      F[n].palavras.find((w) => limpa(w.text).startsWith(limpa(prefixo)))?.start ?? F[n].inicio,
   };
 };
 
@@ -102,6 +109,20 @@ export const Som = ({ em, src, fps, volume = 1, dur, some }: {
 
 const suave = Easing.inOut(Easing.cubic);
 
+/** Relógio holográfico sobre a cabeça, em coordenadas do ator. */
+export const Holo = ({ texto, cor, t, y = -930 }: { texto: string; cor: string; t: number; y?: number }) => {
+  const w = Math.max(220, texto.length * 46 + 60);
+  const brilho = 0.85 + 0.15 * Math.sin(t * 7);
+  return (
+    <g transform={`translate(0 ${y + Math.sin(t * 2) * 6})`} opacity={brilho}>
+      <rect x={-w / 2} y={-62} width={w} height={104} rx={20} fill={cor} opacity={0.16} />
+      <rect x={-w / 2} y={-62} width={w} height={104} rx={20} fill="none" stroke={cor} strokeWidth={5} />
+      <text x={0} y={14} textAnchor="middle" fontFamily="Anton, Impact, sans-serif" fontSize={texto === "∞" ? 110 : 64} fill={cor} letterSpacing={2}>{texto}</text>
+      <line x1={-w / 2 + 16} y1={58} x2={w / 2 - 16} y2={58} stroke={cor} strokeWidth={3} opacity={0.4} />
+    </g>
+  );
+};
+
 type Props = {
   manifesto: Manifesto;
   shots: Shot[];
@@ -125,6 +146,8 @@ type Props = {
   legendas?: boolean;
   /** Força do escurecimento nas bordas, de 0 a 1. */
   vinheta?: number;
+  /** Ajusta o texto dos hologramas no tempo (ex.: um relógio contando). */
+  holo?: (texto: string, t: number) => string;
   /** Faixa contínua de fundo, em loop até o corte para preto. */
   trilha?: string;
   sons?: ReactNode;
@@ -132,7 +155,7 @@ type Props = {
 
 export const Episodio = ({
   manifesto, shots, blocos, preto, fx, itens, frente, sobre, final, corLegenda, trilha, sons,
-  elenco = VISUAL, cenario, legendas = true, vinheta = 0.72,
+  elenco = VISUAL, cenario, legendas = true, vinheta = 0.72, holo,
 }: Props) => {
   const frame = useCurrentFrame();
   const fps = manifesto.fps;
@@ -183,6 +206,7 @@ export const Episodio = ({
         const x = e.xPara !== undefined ? lerp(e.x, e.xPara) : e.x;
         const y = e.yPara !== undefined ? lerp(e.y, e.yPara) : e.y;
         const escala = e.sPara !== undefined ? lerp(e.s, e.sPara) : e.s;
+        if (e.dissolvePara !== undefined) e.dissolve = lerp(e.dissolve ?? 0, e.dissolvePara);
         const andando = (e.xPara !== undefined || e.yPara !== undefined) && p > 0.02 && p < 0.98;
         const i = nomes.indexOf(nome);
         return {
@@ -190,9 +214,19 @@ export const Episodio = ({
           el: (
             <g key={nome} transform={`translate(${x} ${y}) scale(${escala})`}>
               <ellipse cx={0} cy={0} rx={120} ry={22} fill="#000" opacity={0.35} />
-              <Ator v={elenco[nome]} t={t} expr={e.expr} pose={e.pose} olhar={e.olhar}
-                falando={fala?.p === nome && falando} andando={andando} tremor={e.tremor}
-                fechado={e.fechado} lagrima={e.lagrima} nega={e.nega} fase={i * 1.9} />
+              <g opacity={1 - (e.dissolve ?? 0)}>
+                <Ator v={elenco[nome]} t={t} expr={e.expr} pose={e.pose} olhar={e.olhar}
+                  falando={fala?.p === nome && falando} andando={andando} tremor={e.tremor}
+                  fechado={e.fechado} lagrima={e.lagrima} nega={e.nega} fase={i * 1.9} />
+              </g>
+              {(e.dissolve ?? 0) > 0 &&
+                Array.from({ length: 40 }, (_, k) => {
+                  const d = e.dissolve ?? 0;
+                  const px = Math.sin(k * 12.9898) * 140 + Math.sin(t * 2 + k) * 30 * d;
+                  const py = -60 - ((k * 37) % 800) - d * 260 * (0.5 + (k % 5) / 5);
+                  return <circle key={k} cx={px} cy={py} r={6 + (k % 3) * 4} fill="#cfe9ff" opacity={Math.min(1, d * 2) * (1 - d * 0.7)} />;
+                })}
+              {e.holo && <Holo texto={holo ? holo(e.holo, t) : e.holo} cor={e.holoCor ?? "#7ef0ff"} t={t} />}
             </g>
           ) as ReactNode,
         };
