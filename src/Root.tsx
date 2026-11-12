@@ -16,6 +16,7 @@ import { Andar, ANDAR_DURACAO, ANDAR_FPS } from "./andar/Andar";
 import { Repete, REPETE_DURACAO, REPETE_FPS } from "./repete/Repete";
 import { Mentira, MENTIRA_DURACAO, MENTIRA_FPS } from "./mentira/Mentira";
 import { Silencio, SILENCIO_DURACAO, SILENCIO_FPS } from "./silencio/Silencio";
+import { Sonho, SONHO_DURACAO, SONHO_FPS } from "./sonho/Sonho";
 import { VIDEO } from "./theme";
 
 export const Root = () => (
@@ -99,6 +100,7 @@ export const Root = () => (
     <Composition id="Repete" component={Repete} durationInFrames={REPETE_DURACAO} fps={REPETE_FPS} width={VIDEO.width} height={VIDEO.height} />
     <Composition id="Mentira" component={Mentira} durationInFrames={MENTIRA_DURACAO} fps={MENTIRA_FPS} width={VIDEO.width} height={VIDEO.height} />
     <Composition id="Silencio" component={Silencio} durationInFrames={SILENCIO_DURACAO} fps={SILENCIO_FPS} width={VIDEO.width} height={VIDEO.height} />
+    <Composition id="Sonho" component={Sonho} durationInFrames={SONHO_DURACAO} fps={SONHO_FPS} width={VIDEO.width} height={VIDEO.height} />
     <Composition
       id="Demo"
       component={Demo}
