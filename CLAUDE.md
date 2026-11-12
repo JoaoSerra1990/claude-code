@@ -67,11 +67,12 @@ O usuário pediu para gerar todos, um por vez, no estilo de sempre, e continuar 
 quando o limite de uso voltar. Ordem e situação (atualizar a cada curta):
 - 06 O Abismo (`abismo`): pronto e entregue no chat.
 - 07 O Labirinto dos Esquecidos (`labirinto`): pronto e entregue no chat.
-- 08 Os Últimos Oito Minutos (`oito`): cenas prontas e conferidas; falta render final (`npx remotion render Oito out/oito/oito.mp4`) e envio.
-- 09 O Último Andar,
-  10 A Última Repetição, 11 A Cidade de Mentira, 12 O Mundo em Silêncio, 13 O Último Sonho,
+- 08 Os Últimos Oito Minutos (`oito`): pronto e entregue no chat.
+- 09 O Último Andar (`andar`): cenas prontas e conferidas; falta render final (`npx remotion render Andar out/andar/andar.mp4`) e envio. Trilha reaproveitada (minutos).
+- 10 A Última Repetição, 11 A Cidade de Mentira, 12 O Mundo em Silêncio, 13 O Último Sonho,
   14 Quando a Névoa Chegou, 15 Dez Minutos de Eternidade, 16 Os Homens do Destino,
   17 Os Filhos da Noite: a fazer.
+Créditos do ElevenLabs estão curtos (ver `/v1/user/subscription`): a partir do 09, gerar só a narração e reaproveitar trilhas e efeitos de `public/*/sfx`.
 Custos medidos: narração eleven_v3 ≈ 0,5 crédito por caractere (~600 por curta). Reaproveitar
 efeitos de `public/*/sfx` e gerar só o que faltar com `scripts/gerar_sons.py`
 (`episodios/<projeto>_sons.json`). Conferência: `scripts/folha.sh out/<projeto>/previa.mp4`.
