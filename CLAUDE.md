@@ -37,6 +37,9 @@ ElevenLabs. O usuário escreve em português e manda roteiros em PDF.
    pela palavra falada). Registrar a composição em `src/Root.tsx`.
 6. Prévia: `npx remotion render <Id> out/<projeto>/previa.mp4 --scale 0.4`.
 
+Cuidado com nomes de `fundo`: "sala", "patio" e "fachada" são cenários da série no motor;
+em curtas, use outros nomes (ex.: "monitores", "predio").
+
 Cuidado com `pal()`: ele pega a **primeira** palavra que começa com o prefixo
 ("no" casa com "noite", "um" com "uma"). Use prefixos únicos.
 
@@ -70,8 +73,9 @@ quando o limite de uso voltar. Ordem e situação (atualizar a cada curta):
 - 08 Os Últimos Oito Minutos (`oito`): pronto e entregue no chat.
 - 09 O Último Andar (`andar`): pronto e entregue no chat.
 - 10 A Última Repetição (`repete`): pronto e entregue no chat.
-- 11 A Cidade de Mentira (`mentira`): cenas prontas e conferidas; falta render final (`npx remotion render Mentira out/mentira/mentira.mp4`) e envio. Trilha reaproveitada (trem).
-- 12 O Mundo em Silêncio, 13 O Último Sonho,
+- 11 A Cidade de Mentira (`mentira`): pronto e entregue no chat.
+- 12 O Mundo em Silêncio (`silencio`): cenas prontas e conferidas; falta render final (`npx remotion render Silencio out/silencio/silencio.mp4`) e envio. Trilha reaproveitada (abismo).
+- 13 O Último Sonho,
   14 Quando a Névoa Chegou, 15 Dez Minutos de Eternidade, 16 Os Homens do Destino,
   17 Os Filhos da Noite: a fazer.
 Créditos do ElevenLabs estão curtos (ver `/v1/user/subscription`): a partir do 09, gerar só a narração e reaproveitar trilhas e efeitos de `public/*/sfx`.
