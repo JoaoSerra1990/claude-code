@@ -48,6 +48,7 @@ PROJETOS = {
     "tempo": {"inicio": 0.4, "filtros": {}, "preto": 0.7, "cauda": 1.6, "gaps": {"04": 0.9, "07": 0.8}},
     "futuro": {"inicio": 0.4, "filtros": {}, "preto": 0.6, "cauda": 2.6, "gaps": {"03": 0.8, "07": 0.6}},
     "abismo": {"inicio": 0.4, "filtros": {}, "preto": 2.2, "cauda": 1.6, "gaps": {"04": 0.9, "07": 0.9}},
+    "labirinto": {"inicio": 0.4, "filtros": {}, "preto": 2.4, "cauda": 1.6, "gaps": {"04": 0.8, "07": 0.8}},
     "minutos": {"inicio": 0.5, "filtros": {}, "preto": 1.4, "cauda": 4.8,
                 "gaps": {"02": 1.0, "03": 0.8, "04": 2.4, "05": 3.6, "06": 1.2, "07": 1.8,
                          "08": 3.6, "09": 0.8, "10": 0.8, "11": 3.0}},

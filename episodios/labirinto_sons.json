@@ -1,0 +1,7 @@
+{
+ "sfx": {
+  "paredes": ["Giant stone walls sliding and grinding, deep rumble, heavy slam shut at the end", 6],
+  "robos": ["Menacing mechanical creatures skittering on metal legs, servo whirs and clanks approaching fast", 6]
+ },
+ "musica": ["Instrumental cinematic sci-fi thriller score: mysterious pulsing synths and low drones at the start, tension building with ticking percussion, a fast chase section with driving drums around 40 seconds, a dark revelation, then a bright uplifting orchestral finale of freedom in the last 15 seconds. No vocals.", 100]
+}
