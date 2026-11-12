@@ -66,8 +66,9 @@ para os personagens; personagens novos reaproveitam essas vozes pelo campo `voz`
 O usuário pediu para gerar todos, um por vez, no estilo de sempre, e continuar de onde parou
 quando o limite de uso voltar. Ordem e situação (atualizar a cada curta):
 - 06 O Abismo (`abismo`): pronto e entregue no chat.
-- 07 O Labirinto dos Esquecidos (`labirinto`): cenas prontas e conferidas; falta só render final (`npx remotion render Labirinto out/labirinto/labirinto.mp4`) e envio no chat.
-- 08 Os Últimos Oito Minutos, 09 O Último Andar,
+- 07 O Labirinto dos Esquecidos (`labirinto`): pronto e entregue no chat.
+- 08 Os Últimos Oito Minutos (`oito`): cenas prontas e conferidas; falta render final (`npx remotion render Oito out/oito/oito.mp4`) e envio.
+- 09 O Último Andar,
   10 A Última Repetição, 11 A Cidade de Mentira, 12 O Mundo em Silêncio, 13 O Último Sonho,
   14 Quando a Névoa Chegou, 15 Dez Minutos de Eternidade, 16 Os Homens do Destino,
   17 Os Filhos da Noite: a fazer.

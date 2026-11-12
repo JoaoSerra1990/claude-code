@@ -11,6 +11,7 @@ import { Tempo, TEMPO_DURACAO, TEMPO_FPS } from "./tempo/Tempo";
 import { Futuro, FUTURO_DURACAO, FUTURO_FPS } from "./futuro/Futuro";
 import { Abismo, ABISMO_DURACAO, ABISMO_FPS } from "./abismo/Abismo";
 import { Labirinto, LABIRINTO_DURACAO, LABIRINTO_FPS } from "./labirinto/Labirinto";
+import { Oito, OITO_DURACAO, OITO_FPS } from "./oito/Oito";
 import { VIDEO } from "./theme";
 
 export const Root = () => (
@@ -89,6 +90,7 @@ export const Root = () => (
     />
     <Composition id="Abismo" component={Abismo} durationInFrames={ABISMO_DURACAO} fps={ABISMO_FPS} width={VIDEO.width} height={VIDEO.height} />
     <Composition id="Labirinto" component={Labirinto} durationInFrames={LABIRINTO_DURACAO} fps={LABIRINTO_FPS} width={VIDEO.width} height={VIDEO.height} />
+    <Composition id="Oito" component={Oito} durationInFrames={OITO_DURACAO} fps={OITO_FPS} width={VIDEO.width} height={VIDEO.height} />
     <Composition
       id="Demo"
       component={Demo}

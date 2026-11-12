@@ -1,0 +1,9 @@
+[
+ {"n": "01", "p": "Narrador", "emo": "[grave, cinematic, ominous]", "t": "O trem explodiu às oito e dezessete. Às oito e nove, Miguel acordou novamente no mesmo banco. Era a quarta vez. E ninguém acreditava nele."},
+ {"n": "02", "p": "Narrador", "emo": "[grave, urgent, frustrated]", "t": "Ele tentou parar o trem, gritou com o maquinista e puxou o freio. Em todas as tentativas, a explosão aconteceu. Até notar uma mulher que mudava de vagão antes do desastre."},
+ {"n": "03", "p": "Narrador", "emo": "[grave, intrigued, slow reveal]", "t": "Miguel a seguiu. Ela conhecia seu nome e disse que ele não estava preso no tempo. Estava preso numa simulação construída para encontrar a origem do atentado."},
+ {"n": "04", "p": "Narrador", "emo": "[grave, tense, hushed]", "t": "A mulher era uma investigadora. O verdadeiro sabotador era o técnico que fingia consertar o ar-condicionado. Miguel viu o detonador escondido na caixa de ferramentas."},
+ {"n": "05", "p": "Narrador", "emo": "[grave, urgent, building]", "t": "Faltavam dois minutos. A investigadora avisou: se Miguel morresse outra vez, sua memória seria apagada. Mesmo assim, ele correu atrás do técnico."},
+ {"n": "06", "p": "Narrador", "emo": "[grave, intense, climactic]", "t": "Miguel arrancou a caixa do técnico e a lançou pela janela de manutenção, sobre um trecho vazio dos trilhos. A explosão aconteceu longe do trem."},
+ {"n": "07", "p": "Narrador", "emo": "[grave, relieved, warm and hopeful]", "t": "Miguel abriu os olhos num hospital. O atentado real havia sido impedido graças às informações enviadas pela simulação. Na televisão, viu os passageiros descendo vivos. Pela primeira vez, o relógio passou das oito e dezessete."}
+]
