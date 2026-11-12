@@ -33,6 +33,8 @@ export type Visual = {
   /** Bolsa transversal, nesta cor. */
   bolsa?: string;
   sobrancelha?: string;
+  /** Máscara de proteção cobrindo nariz e boca, nesta cor. */
+  mascara?: string;
 };
 
 type Props = {
@@ -301,6 +303,13 @@ export const Ator = ({
             </g>
           )}
           {boca()}
+          {v.mascara && (
+            <g>
+              <path d="M-100 -664 L-58 -652 M100 -664 L58 -652" stroke="#14161c" strokeWidth={7} />
+              <path d="M-62 -668 Q0 -690 62 -668 L54 -600 Q0 -574 -54 -600Z" fill={v.mascara} stroke="#14161c" strokeWidth={6} />
+              <circle cx={-26} cy={-624} r={16} fill="#14161c" opacity={0.55} /><circle cx={26} cy={-624} r={16} fill="#14161c" opacity={0.55} />
+            </g>
+          )}
           {v.cicatriz && <path d="M30 -770 L52 -738 M40 -772 L44 -760" stroke="#b5655a" strokeWidth={6} strokeLinecap="round" />}
           {v.chapeu && (
             <g>
