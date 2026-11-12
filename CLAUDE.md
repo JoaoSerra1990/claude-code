@@ -40,12 +40,15 @@ ElevenLabs. O usuário escreve em português e manda roteiros em PDF.
 Cuidado com nomes de `fundo`: "sala", "patio" e "fachada" são cenários da série no motor;
 em curtas, use outros nomes (ex.: "monitores", "predio").
 
+`mix()` de `src/abismo/cenarios.tsx` só aceita cores hexadecimais e devolve `rgb(...)`: não
+encadear um `mix` dentro de outro (ver `mh` em `src/noite/cenarios.tsx`).
+
 Cuidado com `pal()`: ele pega a **primeira** palavra que começa com o prefixo
 ("no" casa com "noite", "um" com "uma"). Use prefixos únicos.
 
 ## Peças principais
 - `src/serie/Ator.tsx`: boneco (expressões, poses, olhar, piscar, fala, andar, lágrima,
-  olhos fechados, negar com a cabeça, chapéu, cicatriz, mochila, casaco, barba).
+  olhos fechados, negar com a cabeça, chapéu, cicatriz, mochila, casaco, barba, máscara).
 - `src/serie/motor.tsx`: câmera, luz, atores, hologramas sobre a cabeça, dissolver em luz,
   legendas e áudio.
 - Cenários: `src/serie/cenarios.tsx` (O Último Sinal), `src/mare/cenarios.tsx`
@@ -65,9 +68,8 @@ para os personagens; personagens novos reaproveitam essas vozes pelo campo `voz`
   A Cidade Sem Amanhã (`cidade`), O Homem que Escondeu o Tempo (`tempo`),
   O Homem que Matou Seu Futuro (`futuro`).
 
-## Fila em andamento: roteiros do Drive (Animacoes/Curtas/Roteiros, id 1vV0vXvNB3VFAndJpngn_3RqYNN3JsYQJ)
-O usuário pediu para gerar todos, um por vez, no estilo de sempre, e continuar de onde parou
-quando o limite de uso voltar. Ordem e situação (atualizar a cada curta):
+## Fila concluída: roteiros do Drive (Animacoes/Curtas/Roteiros, id 1vV0vXvNB3VFAndJpngn_3RqYNN3JsYQJ)
+O usuário pediu para gerar todos, um por vez, no estilo de sempre. Situação:
 - 06 O Abismo (`abismo`): pronto e entregue no chat.
 - 07 O Labirinto dos Esquecidos (`labirinto`): pronto e entregue no chat.
 - 08 Os Últimos Oito Minutos (`oito`): pronto e entregue no chat.
@@ -78,8 +80,9 @@ quando o limite de uso voltar. Ordem e situação (atualizar a cada curta):
 - 13 O Último Sonho (`sonho`): pronto e entregue no chat.
 - 14 Quando a Névoa Chegou (`nevoa`): pronto e entregue no chat.
 - 15 Dez Minutos de Eternidade (`eternidade`): pronto e entregue no chat (as duas frases entre aspas do roteiro ganharam voz de personagem).
-- 16 Os Homens do Destino (`destino`): cenas prontas e conferidas; falta render final (`npx remotion render Destino out/destino/destino.mp4`) e envio. Trilha própria.
-- 17 Os Filhos da Noite: a fazer (Drive id 1hzXl0YEPt_gKGhARNcEaQ5mAecsIjVrq).
+- 16 Os Homens do Destino (`destino`): pronto e entregue no chat.
+- 17 Os Filhos da Noite (`noite`, composição `Noite`): pronto e entregue no chat. O roteiro não dá o nome da irmã; no vidro aparece "ANA" (`NOME_IRMA` em `src/noite/Noite.tsx`).
+Fila concluída: os 12 roteiros (06 a 17) foram entregues. Os MP4 ficam em `out/` (fora do git); para refazer um, rodar o render do projeto.
 Créditos do ElevenLabs estão curtos (ver `/v1/user/subscription`): a partir do 09, gerar só a narração e reaproveitar trilhas e efeitos de `public/*/sfx`.
 Custos medidos: narração eleven_v3 ≈ 0,5 crédito por caractere (~600 por curta). Reaproveitar
 efeitos de `public/*/sfx` e gerar só o que faltar com `scripts/gerar_sons.py`

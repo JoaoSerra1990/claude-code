@@ -20,6 +20,7 @@ import { Sonho, SONHO_DURACAO, SONHO_FPS } from "./sonho/Sonho";
 import { NevoaChegou, NEVOA_DURACAO, NEVOA_FPS } from "./nevoa/Nevoa";
 import { Eternidade, ETERNIDADE_DURACAO, ETERNIDADE_FPS } from "./eternidade/Eternidade";
 import { Destino, DESTINO_DURACAO, DESTINO_FPS } from "./destino/Destino";
+import { FilhosDaNoite, NOITE_DURACAO, NOITE_FPS } from "./noite/Noite";
 import { VIDEO } from "./theme";
 
 export const Root = () => (
@@ -107,6 +108,7 @@ export const Root = () => (
     <Composition id="Nevoa" component={NevoaChegou} durationInFrames={NEVOA_DURACAO} fps={NEVOA_FPS} width={VIDEO.width} height={VIDEO.height} />
     <Composition id="Eternidade" component={Eternidade} durationInFrames={ETERNIDADE_DURACAO} fps={ETERNIDADE_FPS} width={VIDEO.width} height={VIDEO.height} />
     <Composition id="Destino" component={Destino} durationInFrames={DESTINO_DURACAO} fps={DESTINO_FPS} width={VIDEO.width} height={VIDEO.height} />
+    <Composition id="Noite" component={FilhosDaNoite} durationInFrames={NOITE_DURACAO} fps={NOITE_FPS} width={VIDEO.width} height={VIDEO.height} />
     <Composition
       id="Demo"
       component={Demo}
