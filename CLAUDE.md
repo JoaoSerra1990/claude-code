@@ -68,8 +68,9 @@ quando o limite de uso voltar. Ordem e situação (atualizar a cada curta):
 - 06 O Abismo (`abismo`): pronto e entregue no chat.
 - 07 O Labirinto dos Esquecidos (`labirinto`): pronto e entregue no chat.
 - 08 Os Últimos Oito Minutos (`oito`): pronto e entregue no chat.
-- 09 O Último Andar (`andar`): cenas prontas e conferidas; falta render final (`npx remotion render Andar out/andar/andar.mp4`) e envio. Trilha reaproveitada (minutos).
-- 10 A Última Repetição, 11 A Cidade de Mentira, 12 O Mundo em Silêncio, 13 O Último Sonho,
+- 09 O Último Andar (`andar`): pronto e entregue no chat.
+- 10 A Última Repetição (`repete`): cenas prontas e conferidas; falta render final (`npx remotion render Repete out/repete/repete.mp4`) e envio. Trilha reaproveitada (oito).
+- 11 A Cidade de Mentira, 12 O Mundo em Silêncio, 13 O Último Sonho,
   14 Quando a Névoa Chegou, 15 Dez Minutos de Eternidade, 16 Os Homens do Destino,
   17 Os Filhos da Noite: a fazer.
 Créditos do ElevenLabs estão curtos (ver `/v1/user/subscription`): a partir do 09, gerar só a narração e reaproveitar trilhas e efeitos de `public/*/sfx`.
