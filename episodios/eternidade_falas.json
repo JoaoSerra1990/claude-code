@@ -1,0 +1,12 @@
+[
+ {"n": "01", "p": "Narrador", "emo": "[grave, cinematic, tender]", "t": "A missão de Elisa duraria apenas dez minutos num planeta próximo a uma estrela extrema. Ela prometeu à filha que voltaria antes de seu aniversário."},
+ {"n": "02", "p": "Narrador", "emo": "[grave, tense, then stunned]", "t": "Uma tempestade atrasou a decolagem. Quando Elisa retornou à nave, o computador revelou o impossível: na Terra, oitenta anos haviam passado."},
+ {"n": "03", "p": "Narrador", "emo": "[grave, quiet, heartbroken]", "t": "Havia milhares de mensagens da filha. Elisa abriu a última:"},
+ {"n": "04", "p": "Filha", "voz": "HelenaSra", "filtro": "memoria", "emo": "[elderly, warm, gentle, smiling]", "t": "Mãe, construí algo para você. Siga as coordenadas quando voltar."},
+ {"n": "05", "p": "Narrador", "emo": "[grave, awed, slow reveal]", "t": "Elisa voltou ao sistema solar esperando encontrar apenas ruínas. Em vez disso, viu uma estação espacial construída em órbita da Terra."},
+ {"n": "06", "p": "Narrador", "emo": "[grave, tender, emotional]", "t": "Na estação, uma inteligência artificial reproduziu a voz da filha. Ela havia dedicado a vida a estudar o tempo para que a mãe não precisasse envelhecer sozinha."},
+ {"n": "07", "p": "Narrador", "emo": "[grave, warm, bittersweet]", "t": "A filha não conseguira voltar ao passado, mas deixara um arquivo de suas memórias e uma comunidade de descendentes que esperavam conhecer Elisa."},
+ {"n": "08", "p": "Narrador", "emo": "[grave, warm, gentle]", "t": "Elisa entrou numa sala decorada para uma festa. Sua bisneta segurava um bolo com uma vela e disse:"},
+ {"n": "09", "p": "Bisneta", "voz": "Lívia", "emo": "[young, sweet, warm, softly]", "t": "Ela pediu que guardássemos seu lugar."},
+ {"n": "10", "p": "Narrador", "emo": "[grave, deeply moved, warm]", "t": "Elisa soprou a vela cercada pela família que nunca soube que teria."}
+]
