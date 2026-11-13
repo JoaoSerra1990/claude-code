@@ -59,6 +59,8 @@ PROJETOS = {
     "eternidade": {"inicio": 0.8, "filtros": {}, "preto": 3.6, "cauda": 1.6, "gaps": {"02": 1.2, "03": 1.2, "04": 0.9, "05": 1.6, "06": 1.2, "07": 1.2, "08": 1.4, "09": 0.7, "10": 1.4}},
     "destino": {"inicio": 0.8, "filtros": {}, "preto": 3.6, "cauda": 1.6, "gaps": {"02": 1.2, "03": 1.0, "04": 1.2, "05": 1.2, "06": 1.2, "07": 1.8}},
     "noite": {"inicio": 0.8, "filtros": {}, "preto": 3.6, "cauda": 1.6, "gaps": {"02": 1.2, "03": 1.2, "04": 1.2, "05": 1.2, "06": 1.2, "07": 1.8}},
+    "aneis": {"inicio": 0.5, "velocidade": 1.5, "filtros": {}, "preto": 2.4, "cauda": 1.4,
+              "gaps": {"02": 0.5, "03": 0.5, "04": 0.5, "05": 0.5, "06": 0.5, "07": 0.5, "08": 0.5, "09": 0.5, "10": 0.6, "11": 0.7, "12": 1.4}},
     "minutos": {"inicio": 0.5, "filtros": {}, "preto": 1.4, "cauda": 4.8,
                 "gaps": {"02": 1.0, "03": 0.8, "04": 2.4, "05": 3.6, "06": 1.2, "07": 1.8,
                          "08": 3.6, "09": 0.8, "10": 0.8, "11": 3.0}},
@@ -75,7 +77,7 @@ def duracao(path):
     return float(out.strip())
 
 
-def palavras(alinhamento, inicio_clipe):
+def palavras(alinhamento, inicio_clipe, VELOCIDADE=VELOCIDADE):
     """Agrupa caracteres em palavras, ignorando marcações [entre colchetes]."""
     chars = alinhamento["characters"]
     starts = [x / VELOCIDADE for x in alinhamento["character_start_times_seconds"]]
@@ -101,7 +103,7 @@ def palavras(alinhamento, inicio_clipe):
     return resultado
 
 
-def exportar(entrada, saida, filtros_voz):
+def exportar(entrada, saida, filtros_voz, VELOCIDADE=VELOCIDADE):
     filtros = [f"atempo={VELOCIDADE}"] + filtros_voz
     sh(f'ffmpeg -y -v error -i "{entrada}" -af "{",".join(filtros)}" "{saida}"')
 
@@ -113,23 +115,24 @@ def nome_arquivo(projeto, fala):
 
 def main(projeto):
     cfg = PROJETOS[projeto]
+    VEL = cfg.get("velocidade", VELOCIDADE)  # ritmo próprio do projeto, se houver
     falas = json.load(open(f"episodios/{projeto}_falas.json", encoding="utf-8"))
     origem = f"out/{projeto}/falas"
     os.makedirs(f"public/{projeto}/falas", exist_ok=True)
     clipes, cursor = [], cfg["inicio"]
     for i, f in enumerate(falas):
         if i > 0:
-            cursor += cfg["gaps"].get(f["n"], GAP) / VELOCIDADE
+            cursor += cfg["gaps"].get(f["n"], GAP) / VEL
         nome = nome_arquivo(projeto, f)
         destino = f"public/{projeto}/falas/{nome}.mp3"
         filtros = FILTROS_NOMEADOS[f["filtro"]] if "filtro" in f else cfg["filtros"].get(f["p"], [])
-        exportar(os.path.join(origem, nome + ".mp3"), destino, filtros)
+        exportar(os.path.join(origem, nome + ".mp3"), destino, filtros, VEL)
         dur = duracao(destino)
         alinh = json.load(open(os.path.join(origem, nome + ".json"), encoding="utf-8"))
         clipes.append({
             "n": f["n"], "p": f["p"], "arquivo": f"{projeto}/falas/{nome}.mp3",
             "inicio": round(cursor, 3), "fim": round(cursor + dur, 3),
-            "palavras": palavras(alinh, cursor),
+            "palavras": palavras(alinh, cursor, VEL),
         })
         cursor += dur
 

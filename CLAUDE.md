@@ -68,6 +68,13 @@ para os personagens; personagens novos reaproveitam essas vozes pelo campo `voz`
   A Cidade Sem Amanhã (`cidade`), O Homem que Escondeu o Tempo (`tempo`),
   O Homem que Matou Seu Futuro (`futuro`).
 
+## Resumões (texto escrito por nós, só narração)
+- **O Senhor dos Anéis** (`aneis`, composição `Aneis`): pronto e entregue no chat (2min11). Narração em
+  **1,5x** a pedido do usuário para este formato (`"velocidade": 1.5` em `PROJETOS` de `scripts/preparar.py`;
+  os demais projetos seguem em 1,1x). Desenho próprio, sem copiar o visual dos filmes; dourado reservado
+  ao Anel; trilha cai em silêncio antes de o Anel ser destruído; termina na porta do Condado, como começa.
+  `Som` do motor ganhou `desde` (segundo do arquivo em que o som começa).
+
 ## Fila concluída: roteiros do Drive (Animacoes/Curtas/Roteiros, id 1vV0vXvNB3VFAndJpngn_3RqYNN3JsYQJ)
 O usuário pediu para gerar todos, um por vez, no estilo de sempre. Situação:
 - 06 O Abismo (`abismo`): pronto e entregue no chat.

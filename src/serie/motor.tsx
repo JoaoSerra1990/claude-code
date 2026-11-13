@@ -91,8 +91,10 @@ export const decai = (t: number, em: number, dur: number) => (t >= em && t < em 
 /** Vai de 0 a 1 entre `de` e `ate`, com limites. */
 export const sobe = (t: number, de: number, ate: number) => Math.min(1, Math.max(0, (t - de) / (ate - de)));
 
-export const Som = ({ em, src, fps, volume = 1, dur, some }: {
+export const Som = ({ em, src, fps, volume = 1, dur, some, desde = 0 }: {
   em: number; src: string; fps: number; volume?: number; dur?: number;
+  /** Segundo do arquivo em que o som começa a tocar. */
+  desde?: number;
   /** Segundos de fade no fim do trecho (exige `dur`). */
   some?: number;
 }) => {
@@ -101,6 +103,7 @@ export const Som = ({ em, src, fps, volume = 1, dur, some }: {
     <Sequence from={Math.max(0, Math.round(em * fps))} durationInFrames={quadros}>
       <Audio
         src={staticFile(src)}
+        startFrom={Math.round(desde * fps)}
         volume={some && quadros ? (f) => volume * Math.min(1, Math.max(0, (quadros - f) / (some * fps))) : volume}
       />
     </Sequence>
